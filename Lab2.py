@@ -17,13 +17,15 @@ labels = [
 
 for label in labelDir.keys():
     cwd = os.path.dirname(os.path.abspath(__file__))
-    print(os.listdir(os.path.join(cwd,labelDir[label])))
     for file in os.listdir(os.path.join(cwd,labelDir[label])):
         filepath = os.path.join(cwd,labelDir[label])+os.sep+file
         with open(filepath,encoding='utf8',errors='ignore',mode='r') as review:
             content = review.read()
             data.append(content)
             labels.append(label)
+
+print(data)
+print(labels)
 
 XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
 
