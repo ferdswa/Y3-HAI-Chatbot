@@ -57,16 +57,16 @@ class HAIChatBotMC:
                 questArray = user_input.lower().split()
                 dfAnswers = testIntent.answerQuestion(questArray)
                 response = dfAnswers['answers'].values
+                r = random.choice(response)
+                print(r)
+            else:
+                if user_input.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
+                    exiting = 1
                 
-
-            
-            if user_input.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
-                exiting = 1
-            
-            response = self.get_response(user_input)
-            print(f"HAIBot: {response}")
-            if(exiting):
-                break
+                response = self.get_response(user_input)
+                print(f"HAIBot: {response}")
+                if(exiting):
+                    break
 
     def getUserName(self):
         print("HAIBot: Please tell me your name to personalise your response")

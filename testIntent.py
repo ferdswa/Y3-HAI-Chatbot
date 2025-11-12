@@ -34,4 +34,7 @@ def answerQuestion(userInput):
     if(len(df)>0):
         return df#answer found
     else:
-        return pd.DataFrame({'documents':'none', 'questions': 'none applicable', 'answers': 'Sorry, I don\'t have access to that information'})#No question found
+        documentsNF = ['none']
+        questionsNF = ['nf']
+        answersNF = ['Sorry, I don\'t have access to that information']
+        return pd.DataFrame({'documents':documentsNF, 'questions': questionsNF, 'answers': answersNF})#No question found
