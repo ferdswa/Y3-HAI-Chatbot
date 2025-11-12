@@ -1,17 +1,16 @@
+import os
+import csv
 import random
-import data_in
 import pandas as pd
 import datetime
 import re
 
-
 dayPd = 'morning'
-df = data_in.fetchQAData()
-
 class HAIChatBotMC:
     name = ''
     def __init__(self):
         self.patterns = {#Use regex strings and randoms to generate a more 'alive' feel
+            r'question':[f"Sure, what would you like to ask {self.name}?"],
             r'hello|hi|hey':[f"Hi there {self.name}, what can I help you with?",
                              f"What's up {self.name}?",
                              f"Hey {self.name}, what can I do for you today?",
