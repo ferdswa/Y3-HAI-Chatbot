@@ -20,6 +20,10 @@ def fetchQAData():
     df = pd.DataFrame({'documents':documents, 'questions': questions, 'answers': answers}) #topics = documents
     return df
 
-def testQuestion(userInput):
+def testQuestion(userInput:str):
     df = fetchQAData()
-    
+    qWords = 'how','why','when','who','what'
+    if(userInput.startswith(qWords)):
+        return True
+    else:
+        return False
