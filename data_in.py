@@ -1,6 +1,13 @@
 import os
 import csv
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 
 filename = "COMP3074-CW1-Dataset.csv"
 
@@ -19,5 +26,5 @@ def fetchQAData():
             answers.append(line[2].lower())
             documents.append(line[3].lower())
 
-    df = pd.DataFrame({'documents':documents, 'questions': questions, 'answers': answers})
+    df = pd.DataFrame({'documents':documents, 'questions': questions, 'answers': answers}) #topics = documents
     return df
