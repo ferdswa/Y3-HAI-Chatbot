@@ -4,6 +4,7 @@ import random
 import pandas as pd
 import datetime
 import re
+import testIntent
 
 dayPd = 'morning'
 class HAIChatBotMC:
@@ -47,9 +48,17 @@ class HAIChatBotMC:
         self.__init__()#Reinitialise to grab name
         response = self.get_response("hi")
         print(f"HAIBot: {response}")
-        while True:
+        while True:#Main loop. I want the pattern to be transaction->question/answer->small talk->hello/goodbye
             exiting = 0
             user_input = input(f"{self.name}: ")
+
+            if(testIntent.testQuestion(user_input)):
+                #question-answer goes here
+                questArray = user_input.lower().split()
+                dfAnswers = testIntent.answerQuestion(questArray)
+                response = dfAnswers['answers'].values
+                
+
             
             if user_input.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
                 exiting = 1

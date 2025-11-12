@@ -21,9 +21,17 @@ def fetchQAData():
     return df
 
 def testQuestion(userInput:str):
-    df = fetchQAData()
     qWords = 'how','why','when','who','what'
-    if(userInput.startswith(qWords)):
+    if(userInput.lower().startswith(qWords)):
         return True
     else:
         return False
+
+def answerQuestion(userInput):
+    df = fetchQAData()
+    for string in userInput:
+        df.query(f'questions.str.contains("{string}")', inplace=True)
+    if(len(df)>0):
+        return df#answer found
+    else:
+        return pd.DataFrame({'documents':'none', 'questions': 'none applicable', 'answers': 'Sorry, I don\'t have access to that information'})#No question found
