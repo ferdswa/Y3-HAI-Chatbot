@@ -1,13 +1,10 @@
-import os
-import csv
 import random
-import pandas as pd
 import datetime
 import re
-import testIntent
+import questionsAnswers
+import generateOutput
 
 dayPd = 'morning'
-currentQuestion = ''
 class HAIChatBotMC:
     name = ''
     def __init__(self):
@@ -34,7 +31,7 @@ class HAIChatBotMC:
         self.noQuestionsFoundResponses = [
             "I don't have access to that information. Would you like to talk about anything else?",
             "I'm not quite sure. Do you want to know about something else?",
-            f"I couldn't find anything about {currentQuestion}, can I help you with anything else?"
+            "I couldn't find anything about $, can I help you with anything else?"
         ]
     def get_response(self, user_input):
         user_input = user_input.lower().strip()
@@ -59,16 +56,18 @@ class HAIChatBotMC:
             exiting = 0
             user_input = input(f"{self.name}: ")
 
-            if(testIntent.testQuestion(user_input)):
+            if(questionsAnswers.testQuestion(user_input)):
                 #question-answer goes here
                 questArray = user_input.lower().split()
-                dfAnswers = testIntent.answerQuestion(questArray)
+                dfAnswers = questionsAnswers.answerQuestion(questArray)
                 if 'none' in dfAnswers['documents'].values:
-                    print(random.choice(self.noQuestionsFoundResponses))
+                    ret = random.choice(self.noQuestionsFoundResponses)
+                    ret = (ret, ret.replace('$',user_input))['$' in ret]
+                    print(f"HAIBot: {ret}")
                 else:
                     response = dfAnswers['answers'].values
                     r = random.choice(response)
-                    print(r)
+                    print(f"HAIBot: {generateOutput.generateQAOutput(r,user_input,0)}")
             else:
                 if user_input.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
                     exiting = 1
