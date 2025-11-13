@@ -23,10 +23,10 @@ class HAIChatBotMC:
                                         f"Bye {self.name}, have a good {dayPd}"],
         }
         self.defaultResponses = [#Fallback option
-            "I'm not sure I quite understand, could you rephrase that?",
-            "I'm quite new and I can't do that yet. What else would you like to talk about",
-            "That's interesting, could you expand?",
-            "I'm sorry, I couldn't understand that. Could you put it in different words?"
+            f"I'm not sure I quite understand {self.name}, could you rephrase that?",
+            f"I'm quite new and I can't do that yet. Anything else you'd like to talk about {self.name}?",
+            f"That's interesting, could you expand {self.name}?",
+            f"I'm sorry {self.name}, I couldn't understand that. Could you put it in different words?"
         ]
         self.noQuestionsFoundResponses = [
             "I don't have access to that information. Would you like to talk about anything else?",
