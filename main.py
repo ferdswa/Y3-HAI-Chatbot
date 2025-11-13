@@ -59,11 +59,11 @@ class HAIChatBotMC:
 
             if questionsAnswersC.testQuestion(user_input):
                 #question-answer goes here
-                questArray = user_input.lower().split()
+                questArray = user_input
                 dfAnswers = questionsAnswersC.answerQuestion(questArray)
                 if 'none' in dfAnswers['documents'].values:
                     ret = random.choice(self.noQuestionsFoundResponses)
-                    print(questArray)
+                    #print(questArray)
                     ret = (ret, ret.replace('$',user_input))['$' in ret]
                     print(f"HAIBot: {ret}")
                 else:
