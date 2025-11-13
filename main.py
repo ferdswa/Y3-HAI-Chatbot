@@ -29,9 +29,9 @@ class HAIChatBotMC:
             f"I'm sorry {self.name}, I couldn't understand that. Could you put it in different words?"
         ]
         self.noQuestionsFoundResponses = [
-            "I don't have access to that information. Would you like to talk about anything else?",
-            "I'm not quite sure. Do you want to know about something else?",
-            "I couldn't find anything about $, can I help you with anything else?"
+            f"I don't have access to that information {self.name}. Would you like to talk about anything else?",
+            f"I'm not quite sure {self.name}. Do you want to know about something else?",
+            f"I couldn't find anything about $, can I help you with anything else {self.name}?"
         ]
     def get_response(self, user_input):
         user_input = user_input.lower().strip()
@@ -45,6 +45,7 @@ class HAIChatBotMC:
         return random.choice(self.defaultResponses)
     
     def introSelf(self):
+        questionsAnswersC = questionsAnswers.questionsAnswers()
         print("Hello and welcome to Maxim Carr's HAI Chatbot")
         print("Please enter a prompt below")
         print("-" * 50)
@@ -56,12 +57,13 @@ class HAIChatBotMC:
             exiting = 0
             user_input = input(f"{self.name}: ")
 
-            if(questionsAnswers.testQuestion(user_input)):
+            if questionsAnswersC.testQuestion(user_input):
                 #question-answer goes here
                 questArray = user_input.lower().split()
-                dfAnswers = questionsAnswers.answerQuestion(questArray)
+                dfAnswers = questionsAnswersC.answerQuestion(questArray)
                 if 'none' in dfAnswers['documents'].values:
                     ret = random.choice(self.noQuestionsFoundResponses)
+                    print(questArray)
                     ret = (ret, ret.replace('$',user_input))['$' in ret]
                     print(f"HAIBot: {ret}")
                 else:
