@@ -7,6 +7,7 @@ import re
 import testIntent
 
 dayPd = 'morning'
+currentQuestion = ''
 class HAIChatBotMC:
     name = ''
     def __init__(self):
@@ -19,8 +20,9 @@ class HAIChatBotMC:
                              f"What's on your mind {self.name}"],
             r'quit|exit|bye|goodbye|that\'s all|see you': [f"Thanks for chatting {self.name}!",
                                         f"See you later {self.name}, come back whenever you like",
-                                        f"Have fun {self.name}",
+                                        f"Have fun {self.name}, come back soon!",
                                         f"Goodbye",
+                                        f"Bye {self.name}, have a good {dayPd}"
                                         f"Bye {self.name}, have a good {dayPd}"],
         }
         self.defaultResponses = [#Fallback option
@@ -28,6 +30,11 @@ class HAIChatBotMC:
             "I'm quite new and I can't do that yet. What else would you like to talk about",
             "That's interesting, could you expand?",
             "I'm sorry, I couldn't understand that. Could you put it in different words?"
+        ]
+        self.noQuestionsFoundResponses = [
+            "I don't have access to that information. Would you like to talk about anything else?",
+            "I'm not quite sure. Do you want to know about something else?",
+            f"I couldn't find anything about {currentQuestion}, can I help you with anything else?"
         ]
     def get_response(self, user_input):
         user_input = user_input.lower().strip()
@@ -56,9 +63,12 @@ class HAIChatBotMC:
                 #question-answer goes here
                 questArray = user_input.lower().split()
                 dfAnswers = testIntent.answerQuestion(questArray)
-                response = dfAnswers['answers'].values
-                r = random.choice(response)
-                print(r)
+                if 'none' in dfAnswers['documents'].values:
+                    print(random.choice(self.noQuestionsFoundResponses))
+                else:
+                    response = dfAnswers['answers'].values
+                    r = random.choice(response)
+                    print(r)
             else:
                 if user_input.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
                     exiting = 1
