@@ -60,11 +60,8 @@ def generateSTOutput(question:str, type: int, addIn: str):
                 quest = string
                 data.append(quest)
                 labels.append(item)
-
-        print(labels)
-        print(data)
                 
-        XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
+        XTrain,yTrain = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
 
         countVect=CountVectorizer()
         XTrainCounts = countVect.fit_transform(XTrain)
@@ -75,15 +72,11 @@ def generateSTOutput(question:str, type: int, addIn: str):
 
         classifier = LogisticRegression(random_state=0).fit(XTrainTF,yTrain)
 
-        X_new_counts = countVect.transform (XTest)
-        X_new_tfidf = tfidfTransformer_.transform(X_new_counts)
-
         nd = question
         pnd = countVect.transform(nd)
         
         predictedV = classifier.predict(pnd)#Replace below with working to generate output
         predictedV = predictedV[0]
-        print(predictedV)
         if predictedV == 'gen':
             return generateGeneral(addIn)
         elif predictedV == 'capability':
