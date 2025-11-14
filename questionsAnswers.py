@@ -58,11 +58,7 @@ class questionsAnswers:
             self.corpusDict[dWord] = lemmatizedQ
 
         for y in self.corpus.values():
-            self.questionVs.append(self.text_to_vector(y)) 
-
-        # tfTransformer = TfidfTransformer(use_idf = True, sublinear_tf = True).fit(XTrainCounts)
-        # XTrainTF = tfTransformer.transform(XTrainCounts)
-        # #return XTrainTF
+            self.questionVs.append(self.text_to_vector(y))
 
     def testQuestion(self,userInput:str):
         qWords = 'how','why','when','who','what'
