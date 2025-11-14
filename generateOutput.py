@@ -61,7 +61,7 @@ def generateSTOutput(question:str, type: int, addIn: str):
                 data.append(quest)
                 labels.append(item)
                 
-        XTrain,yTrain = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
+        XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
 
         countVect=CountVectorizer()
         XTrainCounts = countVect.fit_transform(XTrain)

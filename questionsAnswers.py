@@ -94,7 +94,6 @@ class questionsAnswers:
             cosinesQuestions.append([self.getCosForPair(queryVect,x),x])
 
         cosinesQuestions.sort(reverse=True)#invert cosine calc from method (same as 1-getCosForPair.result)
-        print(cosinesQuestions[0])
         token2rf = cosinesQuestions[0][1].keys()
         reformedToken = ' '.join(token2rf)
 
