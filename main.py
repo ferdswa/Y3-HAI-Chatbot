@@ -19,7 +19,6 @@ class HAIChatBotMC:
                                         f"See you later {self.name}, come back whenever you like",
                                         f"Have fun {self.name}, come back soon!",
                                         f"Goodbye",
-                                        f"Bye {self.name}, have a good {dayPd}"
                                         f"Bye {self.name}, have a good {dayPd}"],
         }
         self.defaultResponses = [#Fallback option
@@ -52,29 +51,36 @@ class HAIChatBotMC:
         self.name = self.getUserName()
         self.__init__()#Reinitialise to grab name
         response = self.get_response("hi")
-        print(f"HAIBot: {response}")
+        print(f"HAIBot: {response}")#If finish within time, replace with better intent matcher.
         while True:#Main loop. I want the pattern to be transaction->question/answer->small talk->hello/goodbye
             exiting = 0
-            user_input = input(f"{self.name}: ")
+            userInput = input(f"{self.name}: ")
 
-            if questionsAnswersC.testQuestion(user_input):
+            if questionsAnswersC.testQuestion(userInput):
                 #question-answer goes here
-                questArray = user_input
-                dfAnswers = questionsAnswersC.answerQuestion(questArray)
+                dfAnswers = questionsAnswersC.answerQuestion(userInput)
                 if 'none' in dfAnswers['documents'].values:
-                    ret = random.choice(self.noQuestionsFoundResponses)
-                    #print(questArray)
-                    ret = (ret, ret.replace('$',user_input))['$' in ret]
-                    print(f"HAIBot: {ret}")
+                    if 'what' in dfAnswers['questions'][0] and 'my name' in dfAnswers['questions'][0]:
+                        ret = generateOutput.generateSTOutput(userInput,0,self.name)
+                        print(f"HAIBot: {ret}")
+                    else:
+                        ret = generateOutput.generateSTOutput(dfAnswers['questions'],1,self.name)
+
+                        if ret == 'failed':
+                            ret = random.choice(self.noQuestionsFoundResponses)
+                            ret = (ret, ret.replace('$',userInput))['$' in ret]
+                            print(f"HAIBot: {ret}")
+                        else:
+                            print(f"HAIBot: {ret}")
                 else:
                     response = dfAnswers['answers'].values
                     r = random.choice(response)
-                    print(f"HAIBot: {generateOutput.generateQAOutput(r,user_input,0)}")
+                    print(f"HAIBot: {generateOutput.generateQAOutput(r,userInput,0)}")
             else:
-                if user_input.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
+                if userInput.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
                     exiting = 1
                 
-                response = self.get_response(user_input)
+                response = self.get_response(userInput)
                 print(f"HAIBot: {response}")
                 if(exiting):
                     break
