@@ -52,12 +52,11 @@ class HAIChatBotMC:
         self.__init__()#Reinitialise to grab name
         response = self.get_response("hi")
         print(f"HAIBot: {response}")#If finish within time, replace with better intent matcher.
-        while True:#Main loop. I want the pattern to be transaction->question/answer->small talk->hello/goodbye
+        while True:#Main loop. FIXME: See todo below
             exiting = 0
             userInput = input(f"{self.name}: ")
-
+            #TODO: Reorder to do NL intent matching
             if questionsAnswersC.testQuestion(userInput):
-                #question-answer goes here
                 dfAnswers = questionsAnswersC.answerQuestion(userInput)
                 if 'none' in dfAnswers['documents'].values:
                     if 'what' in dfAnswers['questions'][0] and 'my name' in dfAnswers['questions'][0]:

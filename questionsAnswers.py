@@ -97,15 +97,15 @@ class questionsAnswers:
         token2rf = cosinesQuestions[0][1].keys()
         reformedToken = ' '.join(token2rf)
 
-        if reformedToken in self.corpus.values() and cosinesQuestions[0][0]>0.75:#Needs refinement
+        if reformedToken in self.corpus.values() and cosinesQuestions[0][0]>0.75:#FIXME: Needs refinement
             c2 = {v:k for k,v in self.corpus.items()}
             cv = c2.get(reformedToken)
-            dfa = df.query(f'documents == "{cv}"', inplace=False)
+            dfa = df.query(f'documents == "{cv}"', inplace=False)#Can return multiple vals. TODO: Get the generateOutput to handle them well. see todo in generateOutput.
             if(len(dfa)>0):
                 return dfa#answer found
         else:
             documentsNF = ['none']
-            questionsNF = [userInput]#Return failed question vector for use elsewhere. 
+            questionsNF = [userInput]#Return failed question for use elsewhere. 
             answersNF = ['none']
             return pd.DataFrame({'documents':documentsNF, 'questions': questionsNF, 'answers': answersNF})#No question found
     

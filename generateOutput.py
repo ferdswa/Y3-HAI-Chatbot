@@ -40,7 +40,7 @@ qAGreetingsRn = [
 ]
 
 
-def generateQAOutput(answer:str,question:str,roundN:int):#Upgrade this
+def generateQAOutput(answer:str,question:str,roundN:int):#Upgrade this. Currently outputs random choice if >1 answer. TODO: Make it add only new information. See todo in questionsAnswers
     outputStr = random.choice(qAGreetingsR1)
     outputStr += answer
     outputStr = (outputStr, outputStr.replace('$',question))['$' in outputStr]
