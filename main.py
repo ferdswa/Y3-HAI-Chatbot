@@ -80,7 +80,7 @@ class HAIChatBotMC:
                     break
 
     def getUserName(self):
-        print("HAIBot: Please tell me your name to personalise your response")
+        print("HAIBot: Hello!\nWhat is your name?")
         n = input("You: ")
         if(len(n)==0):
             print("HAIBot: Names cannot be zero characters long.")
