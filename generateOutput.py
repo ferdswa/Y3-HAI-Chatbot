@@ -47,45 +47,37 @@ def generateQAOutput(answer:str,question:str,roundN:int):#Upgrade this. Currentl
     outputStr = (outputStr, outputStr.replace('$',question))['$' in outputStr]
     return outputStr
 
-def generateSTOutput(question:str, type: int, addIn: str):
-    if type == 0:
-        a = random.choice(basicResponse)
-        a = (a, a.replace('$',addIn))['$' in a]
-        a = generateQAOutput(a,question,0)
-        return a
-    elif type == 1:
-        data = []
-        labels =[]
-        for item in intentST:
-            for string in intentST[item]:
-                quest = string
-                data.append(quest)
-                labels.append(item)
-                
-        XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
+def generateSTOutput(question:str, addIn: str):
+    data = []
+    labels =[]
+    for item in intentST:
+        for string in intentST[item]:
+            quest = string
+            data.append(quest)
+            labels.append(item)
+            
+    XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
 
-        countVect=CountVectorizer()
-        XTrainCounts = countVect.fit_transform(XTrain)
+    countVect=CountVectorizer()
+    XTrainCounts = countVect.fit_transform(XTrain)
 
-        tfidfTransformer_ = TfidfTransformer(use_idf=True,sublinear_tf=True).fit(XTrainCounts)
+    tfidfTransformer_ = TfidfTransformer(use_idf=True,sublinear_tf=True).fit(XTrainCounts)
 
-        XTrainTF = tfidfTransformer_.transform(XTrainCounts)
+    XTrainTF = tfidfTransformer_.transform(XTrainCounts)
 
-        classifier = LogisticRegression(random_state=0).fit(XTrainTF,yTrain)
+    classifier = LogisticRegression(random_state=0).fit(XTrainTF,yTrain)
 
-        nd = question
-        pnd = countVect.transform(nd)
-        
-        predictedV = classifier.predict(pnd)#Replace below with working to generate output
-        predictedV = predictedV[0]
-        if predictedV == 'gen':
-            return generateGeneral(addIn)
-        elif predictedV == 'capability':
-            return generateCapability(['small talk','answer questions'])
-        elif predictedV == 'name':
-            return generateName(addIn)
-        else:
-            return 'failed'
+    nd = question
+    pnd = countVect.transform(nd)
+    
+    predictedV = classifier.predict(pnd)#Replace below with working to generate output
+    predictedV = predictedV[0]
+    if predictedV == 'gen':
+        return generateGeneral(addIn)
+    elif predictedV == 'capability':
+        return generateCapability(['small talk','answer questions'])
+    elif predictedV == 'name':
+        return generateName(addIn)
     else:
         return 'failed'
     

@@ -59,7 +59,7 @@ class HAIChatBotMC:
             if questionsAnswersC.testQuestion(userInput):
                 dfAnswers = questionsAnswersC.answerQuestion(userInput)
                 if 'none' in dfAnswers['documents'].values:
-                    ret = generateOutput.generateSTOutput(dfAnswers['questions'],1,self.name)#Use a classifier to find if this is a 'name' question, a 'general' question, or a 'capability' question 
+                    ret = generateOutput.generateSTOutput(dfAnswers['questions'],self.name)#Use a classifier to find if this is a 'name' question, a 'general' question, or a 'capability' question 
                     if ret == 'failed':#Doesn't match any pattern
                         ret = random.choice(self.noQuestionsFoundResponses)
                         ret = (ret, ret.replace('$',userInput))['$' in ret]
