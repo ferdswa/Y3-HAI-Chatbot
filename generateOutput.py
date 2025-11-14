@@ -74,10 +74,10 @@ def generateSTOutput(question:str, type: int, addIn: str):
 
         classifier = LogisticRegression(random_state=0).fit(XTrainTF,yTrain)
 
-        X_new_counts = countVect.transform ( XTest )
-        X_new_tfidf = tfidfTransformer_ . transform ( X_new_counts )
+        X_new_counts = countVect.transform (XTest)
+        X_new_tfidf = tfidfTransformer_.transform(X_new_counts)
 
-        predicted = classifier . predict ( X_new_tfidf )
+        predicted = classifier.predict(X_new_tfidf)
 
         nd = question
         pnd = countVect.transform(nd)
