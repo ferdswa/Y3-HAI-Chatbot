@@ -110,7 +110,7 @@ class questionsAnswers:
         return Counter(words)
     
     def getCosForPair(self, queryVect, currentVectFrQuestions):
-        
+        #Keys = tokens, values = numbers
         intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
         numerator = sum([queryVect[x] * currentVectFrQuestions[x] for x in intersection])
 

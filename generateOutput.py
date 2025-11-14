@@ -6,7 +6,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 intentST = {
     'gen' : ["how are you", "how're you", "how are you doing", "how ya doin'", "how ya doin", "how is everything", "how is everything going", "how's everything going"], #Part of a list found: https://stackoverflow.com/questions/51575924/list-of-greetings-phrases-in-english-for-nlp-task
-    'capability' : ['what can you do', 'what can you do for me', 'what tasks can you do for me', "what things can you do for me", "what can you help me with", "what can you do to help me", "what can you do to assist me", "what can you do to help me out"]
+    'capability' : ['what can you do', 'what can you do for me', 'what tasks can you do for me', "what things can you do for me", "what can you help me with", "what can you do to help me", "what can you do to assist me", "what can you do to help me out"],
+    'name': ['what is my name', 'what\'s my name', 'What is my name', 'What\'s my name']
 }
 
 qAGreetingsR1 = [
@@ -81,6 +82,8 @@ def generateSTOutput(question:str, type: int, addIn: str):
             return generateGeneral(addIn)
         elif predictedV == 'capability':
             return generateCapability(['small talk','answer questions'])
+        elif predictedV == 'name':
+            return generateName(addIn)
         else:
             return 'failed'
     else:
@@ -98,3 +101,8 @@ def generateCapability(addIn):
         outputStr += ', '
         outputStr += addIn[x]
     return outputStr
+
+def generateName(addIn):
+    a = random.choice(basicResponse)
+    a = (a, a.replace('$',addIn))['$' in a]
+    return a

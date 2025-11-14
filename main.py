@@ -8,7 +8,7 @@ dayPd = 'morning'
 class HAIChatBotMC:
     name = ''
     def __init__(self):
-        self.patterns = {#Use regex strings and randoms to generate a more 'alive' feel
+        self.patterns = {#Very basic response templates
             r'question':[f"Sure, what would you like to ask {self.name}?"],
             r'hello|hi|hey':[f"Hi there {self.name}, what can I help you with?",
                              f"What's up {self.name}?",
@@ -59,18 +59,13 @@ class HAIChatBotMC:
             if questionsAnswersC.testQuestion(userInput):
                 dfAnswers = questionsAnswersC.answerQuestion(userInput)
                 if 'none' in dfAnswers['documents'].values:
-                    if 'what' in dfAnswers['questions'][0] and 'my name' in dfAnswers['questions'][0]:
-                        ret = generateOutput.generateSTOutput(userInput,0,self.name)
+                    ret = generateOutput.generateSTOutput(dfAnswers['questions'],1,self.name)#Use a classifier to find if this is a 'name' question, a 'general' question, or a 'capability' question 
+                    if ret == 'failed':#Doesn't match any pattern
+                        ret = random.choice(self.noQuestionsFoundResponses)
+                        ret = (ret, ret.replace('$',userInput))['$' in ret]
                         print(f"HAIBot: {ret}")
-                    else:
-                        ret = generateOutput.generateSTOutput(dfAnswers['questions'],1,self.name)
-
-                        if ret == 'failed':
-                            ret = random.choice(self.noQuestionsFoundResponses)
-                            ret = (ret, ret.replace('$',userInput))['$' in ret]
-                            print(f"HAIBot: {ret}")
-                        else:
-                            print(f"HAIBot: {ret}")
+                    else:#Smalltalk intent matching works
+                        print(f"HAIBot: {ret}")
                 else:
                     response = dfAnswers['answers'].values
                     r = random.choice(response)
