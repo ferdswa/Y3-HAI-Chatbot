@@ -93,15 +93,12 @@ class questionsAnswers:
             cosinesQuestions.append([self.getCosForPair(queryVect,self.questionVs[x]),self.questionVs[x],ldocs[x]])
 
         cosinesQuestions.sort(reverse=True)#invert cosine calc from method (same as 1-getCosForPair.result)
-        token2rf = cosinesQuestions[0][1].keys()
-        reformedToken = ' '.join(token2rf)
+        token2rf = cosinesQuestions[0][2]
 
-        print(f"{cosinesQuestions[0][0]}, {queryVect}, {reformedToken}, {cosinesQuestions[0][2]}")
+        print(f"{cosinesQuestions[0][0]}, {queryVect}, {token2rf}, {cosinesQuestions[0][2]}")
 
-        if reformedToken in self.corpus.values() and cosinesQuestions[0][0]>0.75:#FIXME: Needs refinement
-            c2 = {v:k for k,v in self.corpus.items()}
-            cv = c2.get(reformedToken)
-            dfa = df.query(f'documents == "{cv}"', inplace=False)#Can return multiple vals. TODO: Get the generateOutput to handle them well. see todo in generateOutput.
+        if cosinesQuestions[0][0]>0.75:#FIXME: Needs refinement
+            dfa = df.query(f'documents == "{token2rf}"', inplace=False)#Can return multiple vals. TODO: Get the generateOutput to handle them well. see todo in generateOutput.
             if(len(dfa)>0):
                 return dfa#answer found
         else:

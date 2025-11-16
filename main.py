@@ -54,7 +54,7 @@ class HAIChatBotMC:
         print(f"HAIBot: {response}")#If finish within time, replace with better intent matcher.
         while True:#Main loop. FIXME: See todo below
             exiting = 0
-            userInput = input(f"{self.name}: ")
+            userInput = input(f"{self.name}: ").lower()
             #TODO: Reorder to do NL intent matching
             if questionsAnswersC.testQuestion(userInput):
                 dfAnswers = questionsAnswersC.answerQuestion(userInput)
