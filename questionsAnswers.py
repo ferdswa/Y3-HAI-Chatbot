@@ -35,7 +35,7 @@ class questionsAnswers:
             next(questionsAnswers)
             qaCSV = csv.reader(questionsAnswers)
             for line in qaCSV:
-                self.questions.append(line[1].lower())
+                self.questions.append(re.sub(r'[^\w\s]','',line[1].lower()))
                 self.answers.append(line[2].lower())
                 self.documents.append(line[3].lower())
 
@@ -58,7 +58,7 @@ class questionsAnswers:
             self.corpusDict[dWord] = lemmatizedQ
 
         for y in self.corpus.values():
-            self.questionVs.append(self.text_to_vector(y))
+            self.questionVs.append(self.ttvRegex(y))
 
     def testQuestion(self,userInput:str):
         qWords = 'how','why','when','who','what'
@@ -72,7 +72,7 @@ class questionsAnswers:
         taggedQ = pos_tag(tokenQ)
         lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
         rejoinedQ = ' '.join(lemmatizedQ)
-        return self.text_to_vector(rejoinedQ)
+        return self.ttvRegex(rejoinedQ)
 
     def vectorizeText(self, stringToVectorize):#currently unused
         countVect = CountVectorizer(stop_words=stopwords.words('english'))
@@ -86,12 +86,17 @@ class questionsAnswers:
         df = self.df
         cosinesQuestions = []
         queryVect = self.answerQuestionLemmatized(userInput)
-        for x in self.questionVs:
-            cosinesQuestions.append([self.getCosForPair(queryVect,x),x])
+        ldocs = list(self.corpus.keys())
+        print(queryVect)
+        for x in range(len(self.questionVs)):
+            print(ldocs[x])
+            cosinesQuestions.append([self.getCosForPair(queryVect,self.questionVs[x]),self.questionVs[x],ldocs[x]])
 
         cosinesQuestions.sort(reverse=True)#invert cosine calc from method (same as 1-getCosForPair.result)
         token2rf = cosinesQuestions[0][1].keys()
         reformedToken = ' '.join(token2rf)
+
+        print(f"{cosinesQuestions[0][0]}, {queryVect}, {reformedToken}, {cosinesQuestions[0][2]}")
 
         if reformedToken in self.corpus.values() and cosinesQuestions[0][0]>0.75:#FIXME: Needs refinement
             c2 = {v:k for k,v in self.corpus.items()}
@@ -105,7 +110,7 @@ class questionsAnswers:
             answersNF = ['none']
             return pd.DataFrame({'documents':documentsNF, 'questions': questionsNF, 'answers': answersNF})#No question found
     
-    def text_to_vector(self,text):
+    def ttvRegex(self,text):
         words = WORD.findall(text)
         return Counter(words)
     
