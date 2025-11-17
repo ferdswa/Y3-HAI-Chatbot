@@ -12,7 +12,6 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 filename = "COMP3074-CW1-Dataset.csv"
 lemmatize = WordNetLemmatizer()
-analyzerA = CountVectorizer().build_analyzer()
 nltk.download('wordnet')
 nltk.download('punkt_tab')
 nltk.download('stopwords')
@@ -35,7 +34,7 @@ class questionsAnswers:
             next(questionsAnswers)
             qaCSV = csv.reader(questionsAnswers)
             for line in qaCSV:
-                self.questions.append(re.sub(r'[^\w\s]','',line[1].lower()))
+                self.questions.append(re.sub(r'[^\w\s]','',line[1].lower()))#Remove punct
                 self.answers.append(line[2].lower())
                 self.documents.append(line[3].lower())
 
@@ -58,7 +57,7 @@ class questionsAnswers:
             self.corpusDict[dWord] = lemmatizedQ
 
         for y in self.corpus.values():
-            self.questionVs.append(self.ttvRegex(y))
+            self.questionVs.append(Counter(word_tokenize(y)))
 
     def testQuestion(self,userInput:str):
         qWords = 'how','why','when','who','what'
@@ -71,12 +70,10 @@ class questionsAnswers:
         tokenQ = word_tokenize(userInput)
         taggedQ = pos_tag(tokenQ)
         lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
-        rejoinedQ = ' '.join(lemmatizedQ)
-        return self.ttvRegex(rejoinedQ)
+        return Counter(lemmatizedQ)
 
     def vectorizeText(self, stringToVectorize):#currently unused
         countVect = CountVectorizer(stop_words=stopwords.words('english'))
-
         XTrainCounts = countVect.fit_transform(stringToVectorize)
         featNames = countVect.get_feature_names_out()
         return XTrainCounts
@@ -106,10 +103,6 @@ class questionsAnswers:
             questionsNF = [userInput]#Return failed question for use elsewhere. 
             answersNF = ['none']
             return pd.DataFrame({'documents':documentsNF, 'questions': questionsNF, 'answers': answersNF})#No question found
-    
-    def ttvRegex(self,text):
-        words = WORD.findall(text)
-        return Counter(words)
     
     def getCosForPair(self, queryVect, currentVectFrQuestions):
         #Keys = tokens, values = numbers
