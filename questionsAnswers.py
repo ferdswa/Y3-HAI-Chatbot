@@ -60,7 +60,7 @@ class questionsAnswers:
             indexOfHQV = self.questionVs.index(highestQuestionVector)
             token2rf = ldocs[indexOfHQV]
 
-            if token2rf in self.corpusDict.keys():#FIXME: Needs refinement
+            if token2rf in self.corpusDict.keys():
                 dfa = df.query(f'documents == "{token2rf}"', inplace=False)#Can return multiple vals. TODO: Get the generateOutput to handle them well. see todo in generateOutput.
                 if(len(dfa)>0):
                     return dfa#answer found
