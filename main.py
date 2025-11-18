@@ -115,6 +115,8 @@ class HAIChatBotMC:
             return 0
         elif max(highQA,highST) == highST and highST>0.7:
             return 1
+        else:
+            return -1
 
 if(__name__ == '__main__'):
     x = datetime.datetime.now().hour
