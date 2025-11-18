@@ -56,13 +56,6 @@ class questionsAnswers:
 
         for y in self.corpusDict.values():
             self.questionVs.append(Counter(y))
-
-    def testQuestion(self,userInput:str):
-        qWords = 'how','why','when','who','what'
-        if(userInput.lower().startswith(qWords)):
-            return True
-        else:
-            return False
         
     def queryLemmatize(self, userInput):
         tokenQ = word_tokenize(userInput)
@@ -70,29 +63,22 @@ class questionsAnswers:
         lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
         return Counter(lemmatizedQ)
 
-    def vectorizeText(self, stringToVectorize):#currently unused
-        countVect = CountVectorizer(stop_words=stopwords.words('english'))
-        XTrainCounts = countVect.fit_transform(stringToVectorize)
-        featNames = countVect.get_feature_names_out()
-        return XTrainCounts
-
-
-    def answerQuestion(self,userInput):
+    def answerQuestion(self,userInput,highestQuestionVector):
         df = self.df
         cosinesQuestions = []
         queryVect = self.queryLemmatize(userInput)
         ldocs = list(self.corpusDict.keys())
-        for x in range(len(self.questionVs)):
-            cosinesQuestions.append([self.getCosForPair(queryVect,self.questionVs[x]),self.questionVs[x],ldocs[x]])
+        try:
+            indexOfHQV = self.questionVs.index(highestQuestionVector)
+            token2rf = ldocs[indexOfHQV]
 
-        cosinesQuestions.sort(reverse=True)#invert cosine calc from method (same as 1-getCosForPair.result)
-        token2rf = cosinesQuestions[0][2]
-
-        if cosinesQuestions[0][0]>0.7:#FIXME: Needs refinement
-            dfa = df.query(f'documents == "{token2rf}"', inplace=False)#Can return multiple vals. TODO: Get the generateOutput to handle them well. see todo in generateOutput.
-            if(len(dfa)>0):
-                return dfa#answer found
-        else:
+            if token2rf in self.corpusDict.keys():#FIXME: Needs refinement
+                dfa = df.query(f'documents == "{token2rf}"', inplace=False)#Can return multiple vals. TODO: Get the generateOutput to handle them well. see todo in generateOutput.
+                if(len(dfa)>0):
+                    return dfa#answer found
+            else: 
+                raise ValueError("A value for token2rf was given that wasn't in documents. This shouldn't happen.")
+        except ValueError:
             documentsNF = ['none']
             questionsNF = [userInput]#Return failed question for use elsewhere. 
             answersNF = ['none']

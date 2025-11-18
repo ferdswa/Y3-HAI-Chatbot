@@ -53,16 +53,14 @@ class HAIChatBotMC:
         self.name = self.getUserName()
         self.__init__()#Reinitialise to grab name
         response = self.get_response("hi")
-        print(f"HAIBot: {response}")#If finish within time, replace with better intent matcher.
-        while True:#Main loop. FIXME: See todo below
+        print(f"HAIBot: {response}")
+        while True:
             exiting = 0
             userInput = input(f"{self.name}: ").lower()
-            #TODO: Reorder to do NL intent matching
-
             processSelect = self.findMostSimilarProc(userInput)
 
-            if processSelect == 0:
-                dfAnswers = self.questionsAnswersC.answerQuestion(userInput)
+            if processSelect[0] == 0:
+                dfAnswers = self.questionsAnswersC.answerQuestion(userInput,processSelect[1])
                 if 'none' in dfAnswers['documents'].values:#Question wasn't able to be answered
                     ret = random.choice(self.noQuestionsFoundResponses)
                     ret = (ret, ret.replace('$',userInput))['$' in ret]
@@ -71,7 +69,7 @@ class HAIChatBotMC:
                     response = dfAnswers['answers'].values
                     r = random.choice(response)
                     print(f"HAIBot: {generateOutput.generateQAOutput(r,userInput,0)}")
-            elif processSelect == 1:
+            elif processSelect[0] == 1:
                 ret = generateOutput.generateSTOutput([userInput],self.name)
                 print(f"HAIBot: {ret}")
             else:
@@ -91,11 +89,13 @@ class HAIChatBotMC:
             self.getUserName()
         else:
             return n
+        
     #Find cos similarity for each process and return which is most similar
     def findMostSimilarProc(self,uI):
         dsA = self.questionsAnswersC.questionVs#Vectors of questions in qa
         dsB = []
         highQA = 0
+        highQ = []
         highST = 0
         a = 0
         uIC = self.questionsAnswersC.queryLemmatize(uI)
@@ -106,17 +106,19 @@ class HAIChatBotMC:
             a = self.questionsAnswersC.getCosForPair(uIC,curQuestion)
             if a>highQA:
                 highQA = a
+                highQ = curQuestion
         for curSmallTalk in dsB:
             cSTL = self.questionsAnswersC.queryLemmatize(curSmallTalk)
             a = self.questionsAnswersC.getCosForPair(uIC,cSTL)
             if a>highST:
                 highST = a
+        print(highQA,highST)
         if max(highQA,highST) == highQA and highQA>0.7:
-            return 0
+            return [0,highQ]
         elif max(highQA,highST) == highST and highST>0.7:
-            return 1
+            return [1,None]
         else:
-            return -1
+            return [-1,None]
 
 if(__name__ == '__main__'):
     x = datetime.datetime.now().hour
