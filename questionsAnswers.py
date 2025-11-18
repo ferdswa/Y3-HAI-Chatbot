@@ -23,7 +23,6 @@ class questionsAnswers:
     questions = []
     answers = []
     documents = []
-    corpus = {}
     corpusDict = {}
     qaLocation = os.path.join(os.path.dirname(os.path.abspath(__file__)),filename)
     df = pd.DataFrame({'documents':documents, 'questions': questions, 'answers': answers})
@@ -53,11 +52,10 @@ class questionsAnswers:
             tokenQ = word_tokenize(qWord)
             taggedQ = pos_tag(tokenQ)
             lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
-            self.corpus[dWord] = ' '.join(lemmatizedQ)
             self.corpusDict[dWord] = lemmatizedQ
 
-        for y in self.corpus.values():
-            self.questionVs.append(Counter(word_tokenize(y)))
+        for y in self.corpusDict.values():
+            self.questionVs.append(Counter(y))
 
     def testQuestion(self,userInput:str):
         qWords = 'how','why','when','who','what'
@@ -83,10 +81,8 @@ class questionsAnswers:
         df = self.df
         cosinesQuestions = []
         queryVect = self.answerQuestionLemmatized(userInput)
-        ldocs = list(self.corpus.keys())
-        print(queryVect)
+        ldocs = list(self.corpusDict.keys())
         for x in range(len(self.questionVs)):
-            print(ldocs[x])
             cosinesQuestions.append([self.getCosForPair(queryVect,self.questionVs[x]),self.questionVs[x],ldocs[x]])
 
         cosinesQuestions.sort(reverse=True)#invert cosine calc from method (same as 1-getCosForPair.result)

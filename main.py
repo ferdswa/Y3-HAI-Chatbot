@@ -7,6 +7,7 @@ import generateOutput
 dayPd = 'morning'
 class HAIChatBotMC:
     name = ''
+    questionsAnswersC = questionsAnswers.questionsAnswers()
     def __init__(self):
         self.patterns = {#Very basic response templates
             r'question':[f"Sure, what would you like to ask {self.name}?"],
@@ -44,7 +45,6 @@ class HAIChatBotMC:
         return random.choice(self.defaultResponses)
     
     def introSelf(self):
-        questionsAnswersC = questionsAnswers.questionsAnswers()
         print("Hello and welcome to Maxim Carr's HAI Chatbot")
         print("Please enter a prompt below")
         print("-" * 50)
@@ -56,8 +56,11 @@ class HAIChatBotMC:
             exiting = 0
             userInput = input(f"{self.name}: ").lower()
             #TODO: Reorder to do NL intent matching
-            if questionsAnswersC.testQuestion(userInput):
-                dfAnswers = questionsAnswersC.answerQuestion(userInput)
+
+            self.getUserName(userInput)
+
+            if self.questionsAnswersC.testQuestion(userInput):
+                dfAnswers = self.questionsAnswersC.answerQuestion(userInput)
                 if 'none' in dfAnswers['documents'].values:
                     ret = generateOutput.generateSTOutput(dfAnswers['questions'],self.name)#Use a classifier to find if this is a 'name' question, a 'general' question, or a 'capability' question 
                     if ret == 'failed':#Doesn't match any pattern
@@ -87,6 +90,10 @@ class HAIChatBotMC:
             self.getUserName()
         else:
             return n
+    #Find cos similarity for each process and return which is most similar
+    def findMostSimilarProc(self,uI:str):
+        dsA = self.questionsAnswersC.questionVs#Vectors of questions in qa
+        dsB = generateOutput.intentST['gen']
 
 if(__name__ == '__main__'):
     x = datetime.datetime.now().hour
