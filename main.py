@@ -104,13 +104,13 @@ class HAIChatBotMC:
             for string in generateOutput.intentST[item]:
                 dsB.append(string)
         for curQuestion in dsA:
-            a = self.questionsAnswersC.getCosForPair(uIC,curQuestion)
+            a = self.getCosForPair(uIC,curQuestion)
             if a>highQA:
                 highQA = a
                 highQ = curQuestion
         for curSmallTalk in dsB:
             cSTL = self.questionsAnswersC.queryLemmatize(curSmallTalk)
-            a = self.questionsAnswersC.getCosForPair(uIC,cSTL)
+            a = self.getCosForPair(uIC,cSTL)
             if a>highST:
                 highST = a
         print(highQA,highST)
