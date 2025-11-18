@@ -1,8 +1,10 @@
+from collections import Counter
 import random
 import datetime
 import re
 import questionsAnswers
 import generateOutput
+from nltk.tokenize import word_tokenize
 
 dayPd = 'morning'
 class HAIChatBotMC:
@@ -57,22 +59,21 @@ class HAIChatBotMC:
             userInput = input(f"{self.name}: ").lower()
             #TODO: Reorder to do NL intent matching
 
-            self.getUserName(userInput)
+            processSelect = self.findMostSimilarProc(userInput)
 
-            if self.questionsAnswersC.testQuestion(userInput):
+            if processSelect == 0:
                 dfAnswers = self.questionsAnswersC.answerQuestion(userInput)
-                if 'none' in dfAnswers['documents'].values:
-                    ret = generateOutput.generateSTOutput(dfAnswers['questions'],self.name)#Use a classifier to find if this is a 'name' question, a 'general' question, or a 'capability' question 
-                    if ret == 'failed':#Doesn't match any pattern
-                        ret = random.choice(self.noQuestionsFoundResponses)
-                        ret = (ret, ret.replace('$',userInput))['$' in ret]
-                        print(f"HAIBot: {ret}")
-                    else:#Smalltalk intent matching works
-                        print(f"HAIBot: {ret}")
-                else:
+                if 'none' in dfAnswers['documents'].values:#Question wasn't able to be answered
+                    ret = random.choice(self.noQuestionsFoundResponses)
+                    ret = (ret, ret.replace('$',userInput))['$' in ret]
+                    print(f"HAIBot: {ret}")
+                else:#Question was answered
                     response = dfAnswers['answers'].values
                     r = random.choice(response)
                     print(f"HAIBot: {generateOutput.generateQAOutput(r,userInput,0)}")
+            elif processSelect == 1:
+                ret = generateOutput.generateSTOutput([userInput],self.name)
+                print(f"HAIBot: {ret}")
             else:
                 if userInput.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
                     exiting = 1
@@ -91,9 +92,29 @@ class HAIChatBotMC:
         else:
             return n
     #Find cos similarity for each process and return which is most similar
-    def findMostSimilarProc(self,uI:str):
+    def findMostSimilarProc(self,uI):
         dsA = self.questionsAnswersC.questionVs#Vectors of questions in qa
-        dsB = generateOutput.intentST['gen']
+        dsB = []
+        highQA = 0
+        highST = 0
+        a = 0
+        uIC = self.questionsAnswersC.queryLemmatize(uI)
+        for item in generateOutput.intentST:
+            for string in generateOutput.intentST[item]:
+                dsB.append(string)
+        for curQuestion in dsA:
+            a = self.questionsAnswersC.getCosForPair(uIC,curQuestion)
+            if a>highQA:
+                highQA = a
+        for curSmallTalk in dsB:
+            cSTL = self.questionsAnswersC.queryLemmatize(curSmallTalk)
+            a = self.questionsAnswersC.getCosForPair(uIC,cSTL)
+            if a>highST:
+                highST = a
+        if max(highQA,highST) == highQA and highQA>0.7:
+            return 0
+        elif max(highQA,highST) == highST and highST>0.7:
+            return 1
 
 if(__name__ == '__main__'):
     x = datetime.datetime.now().hour

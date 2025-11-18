@@ -64,7 +64,7 @@ class questionsAnswers:
         else:
             return False
         
-    def answerQuestionLemmatized(self, userInput):
+    def queryLemmatize(self, userInput):
         tokenQ = word_tokenize(userInput)
         taggedQ = pos_tag(tokenQ)
         lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
@@ -80,7 +80,7 @@ class questionsAnswers:
     def answerQuestion(self,userInput):
         df = self.df
         cosinesQuestions = []
-        queryVect = self.answerQuestionLemmatized(userInput)
+        queryVect = self.queryLemmatize(userInput)
         ldocs = list(self.corpusDict.keys())
         for x in range(len(self.questionVs)):
             cosinesQuestions.append([self.getCosForPair(queryVect,self.questionVs[x]),self.questionVs[x],ldocs[x]])
@@ -88,9 +88,7 @@ class questionsAnswers:
         cosinesQuestions.sort(reverse=True)#invert cosine calc from method (same as 1-getCosForPair.result)
         token2rf = cosinesQuestions[0][2]
 
-        print(f"{cosinesQuestions[0][0]}, {queryVect}, {token2rf}, {cosinesQuestions[0][2]}")
-
-        if cosinesQuestions[0][0]>0.75:#FIXME: Needs refinement
+        if cosinesQuestions[0][0]>0.7:#FIXME: Needs refinement
             dfa = df.query(f'documents == "{token2rf}"', inplace=False)#Can return multiple vals. TODO: Get the generateOutput to handle them well. see todo in generateOutput.
             if(len(dfa)>0):
                 return dfa#answer found
