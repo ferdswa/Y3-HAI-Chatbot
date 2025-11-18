@@ -60,7 +60,7 @@ class HAIChatBotMC:
             processSelect = self.findMostSimilarProc(userInput)
 
             if processSelect[0] == 0:
-                dfAnswers = self.questionsAnswersC.answerQuestion(userInput,processSelect[1])
+                dfAnswers = self.questionsAnswersC.answerQuestion(processSelect[1])
                 if 'none' in dfAnswers['documents'].values:#Question wasn't able to be answered
                     ret = random.choice(self.noQuestionsFoundResponses)
                     ret = (ret, ret.replace('$',userInput))['$' in ret]

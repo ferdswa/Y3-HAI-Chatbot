@@ -63,10 +63,8 @@ class questionsAnswers:
         lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
         return Counter(lemmatizedQ)
 
-    def answerQuestion(self,userInput,highestQuestionVector):
+    def answerQuestion(self,highestQuestionVector):
         df = self.df
-        cosinesQuestions = []
-        queryVect = self.queryLemmatize(userInput)
         ldocs = list(self.corpusDict.keys())
         try:
             indexOfHQV = self.questionVs.index(highestQuestionVector)
@@ -80,7 +78,7 @@ class questionsAnswers:
                 raise ValueError("A value for token2rf was given that wasn't in documents. This shouldn't happen.")
         except ValueError:
             documentsNF = ['none']
-            questionsNF = [userInput]#Return failed question for use elsewhere. 
+            questionsNF = ['none']#Return failed question for use elsewhere. 
             answersNF = ['none']
             return pd.DataFrame({'documents':documentsNF, 'questions': questionsNF, 'answers': answersNF})#No question found
     
