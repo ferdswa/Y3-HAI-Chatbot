@@ -6,6 +6,10 @@ import re
 import questionsAnswers
 import generateOutput
 from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk import pos_tag
+
+lemmatize = WordNetLemmatizer()
 
 dayPd = 'morning'
 class HAIChatBotMC:
@@ -99,7 +103,7 @@ class HAIChatBotMC:
         highQ = []
         highST = 0
         a = 0
-        uIC = self.questionsAnswersC.queryLemmatize(uI)
+        uIC = self.queryLemmatize(uI)
         for item in generateOutput.intentST:
             for string in generateOutput.intentST[item]:
                 dsB.append(string)
@@ -109,7 +113,7 @@ class HAIChatBotMC:
                 highQA = a
                 highQ = curQuestion
         for curSmallTalk in dsB:
-            cSTL = self.questionsAnswersC.queryLemmatize(curSmallTalk)
+            cSTL = self.queryLemmatize(curSmallTalk)
             a = self.getCosForPair(uIC,cSTL)
             if a>highST:
                 highST = a
@@ -134,6 +138,12 @@ class HAIChatBotMC:
             return 0.0
         else:
             return float(numerator) / denominator
+    
+    def queryLemmatize(self, userInput):
+        tokenQ = word_tokenize(userInput)
+        taggedQ = pos_tag(tokenQ)
+        lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
+        return Counter(lemmatizedQ)
 
 if(__name__ == '__main__'):
     x = datetime.datetime.now().hour

@@ -13,7 +13,6 @@ nltk.download('wordnet')
 nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('averaged_perceptron_tagger_eng')
-WORD = re.compile(r"\w+")
 
 
 class questionsAnswers:
@@ -53,12 +52,6 @@ class questionsAnswers:
 
         for y in self.corpusDict.values():
             self.questionVs.append(Counter(y))
-        
-    def queryLemmatize(self, userInput):
-        tokenQ = word_tokenize(userInput)
-        taggedQ = pos_tag(tokenQ)
-        lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
-        return Counter(lemmatizedQ)
 
     def answerQuestion(self,highestQuestionVector):
         df = self.df
