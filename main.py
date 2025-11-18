@@ -1,4 +1,5 @@
 from collections import Counter
+import math
 import random
 import datetime
 import re
@@ -119,6 +120,20 @@ class HAIChatBotMC:
             return [1,None]
         else:
             return [-1,None]
+        
+    def getCosForPair(self, queryVect, currentVectFrQuestions):
+        #Keys = tokens, values = numbers
+        intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
+        numerator = sum([queryVect[x] * currentVectFrQuestions[x] for x in intersection])
+
+        sum1 = sum([queryVect[x] ** 2 for x in list(queryVect.keys())])
+        sum2 = sum([currentVectFrQuestions[x] ** 2 for x in list(currentVectFrQuestions.keys())])
+        denominator = math.sqrt(sum1) * math.sqrt(sum2)
+
+        if not denominator:
+            return 0.0
+        else:
+            return float(numerator) / denominator
 
 if(__name__ == '__main__'):
     x = datetime.datetime.now().hour

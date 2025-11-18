@@ -1,14 +1,11 @@
-from collections import Counter, defaultdict
-import math
+from collections import Counter
 import re
 import nltk
-import csv,os,pandas as pd, numpy as np
+import csv,os,pandas as pd
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag
-from scipy import spatial
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 filename = "COMP3074-CW1-Dataset.csv"
 lemmatize = WordNetLemmatizer()
@@ -81,17 +78,3 @@ class questionsAnswers:
             questionsNF = ['none']#Return failed question for use elsewhere. 
             answersNF = ['none']
             return pd.DataFrame({'documents':documentsNF, 'questions': questionsNF, 'answers': answersNF})#No question found
-    
-    def getCosForPair(self, queryVect, currentVectFrQuestions):
-        #Keys = tokens, values = numbers
-        intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
-        numerator = sum([queryVect[x] * currentVectFrQuestions[x] for x in intersection])
-
-        sum1 = sum([queryVect[x] ** 2 for x in list(queryVect.keys())])
-        sum2 = sum([currentVectFrQuestions[x] ** 2 for x in list(currentVectFrQuestions.keys())])
-        denominator = math.sqrt(sum1) * math.sqrt(sum2)
-
-        if not denominator:
-            return 0.0
-        else:
-            return float(numerator) / denominator
