@@ -8,6 +8,8 @@ import generateOutput
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag
+import numpy as np
+from numpy.linalg import norm
 
 lemmatize = WordNetLemmatizer()
 
@@ -72,8 +74,7 @@ class HAIChatBotMC:
                     print(f"HAIBot: {ret}")
                 else:#Question was answered
                     response = dfAnswers['answers'].values
-                    r = random.choice(response)
-                    print(f"HAIBot: {generateOutput.generateQAOutput(r,userInput,0)}")
+                    print(f"HAIBot: {generateOutput.generateQAOutput(response,userInput,0)}")
             elif processSelect[0] == 1:
                 ret = generateOutput.generateSTOutput([userInput],self.name)
                 print(f"HAIBot: {ret}")
@@ -97,8 +98,9 @@ class HAIChatBotMC:
         
     #Find cos similarity for each process and return which is most similar
     def findMostSimilarProc(self,uI):
-        dsA = self.questionsAnswersC.questionVs#Vectors of questions in qa
-        dsB = []
+        datasetQA = self.questionsAnswersC.questionVs#Vectors of questions in qa
+        datasetST = []
+        datasetTA = []
         highQA = 0
         highQ = []
         highST = 0
@@ -106,13 +108,13 @@ class HAIChatBotMC:
         uIC = self.queryLemmatize(uI)
         for item in generateOutput.intentST:
             for string in generateOutput.intentST[item]:
-                dsB.append(string)
-        for curQuestion in dsA:
+                datasetST.append(string)
+        for curQuestion in datasetQA:
             a = self.getCosForPair(uIC,curQuestion)
             if a>highQA:
                 highQA = a
                 highQ = curQuestion
-        for curSmallTalk in dsB:
+        for curSmallTalk in datasetST:
             cSTL = self.queryLemmatize(curSmallTalk)
             a = self.getCosForPair(uIC,cSTL)
             if a>highST:
@@ -127,11 +129,12 @@ class HAIChatBotMC:
         
     def getCosForPair(self, queryVect, currentVectFrQuestions):
         #Keys = tokens, values = numbers
+        #Formula: https://en.wikipedia.org/wiki/Cosine_similarity#Definition
         intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
         numerator = sum([queryVect[x] * currentVectFrQuestions[x] for x in intersection])
 
         sum1 = sum([queryVect[x] ** 2 for x in list(queryVect.keys())])
-        sum2 = sum([currentVectFrQuestions[x] ** 2 for x in list(currentVectFrQuestions.keys())])
+        sum2 = sum([currentVectFrQuestions[y] ** 2 for y in list(currentVectFrQuestions.keys())])
         denominator = math.sqrt(sum1) * math.sqrt(sum2)
 
         if not denominator:

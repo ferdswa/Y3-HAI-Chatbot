@@ -40,9 +40,12 @@ qAGreetingsRn = [
 ]
 
 
-def generateQAOutput(answer:str,question:str,roundN:int):#Upgrade this. Currently outputs random choice if >1 answer. TODO: Make it add only new information. See todo in questionsAnswers
+def generateQAOutput(answer,question:str,roundN:int):#Upgrade this. Currently outputs random choice if >1 answer. TODO: Make it add only new information. See todo in questionsAnswers
+    answer = answer.tolist()
     outputStr = random.choice(qAGreetingsR1)
-    outputStr += answer
+    select = random.choice(answer)
+    outputStr += select
+    answer = list(filter(lambda x: x != select,answer))#Filter array to exclude current output string
     outputStr = (outputStr, outputStr.replace('$',question))['$' in outputStr]
     return outputStr
 
