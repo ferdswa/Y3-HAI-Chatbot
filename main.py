@@ -74,7 +74,15 @@ class HAIChatBotMC:
                     print(f"HAIBot: {ret}")
                 else:#Question was answered
                     response = dfAnswers['answers'].values
-                    print(f"HAIBot: {generateOutput.generateQAOutput(response,userInput,0)}")
+                    resp, leftOver = generateOutput.generateQAOutput(response,userInput,0)
+                    print(f"HAIBot: {resp}")
+                    if(len(leftOver)>0):
+                        ur = input("HAIBot: Would you like to know more?")
+                        generateOutput.getAnotherAnswer(leftOver,[ur])
+
+                    else:
+                        print("That's all I've got on that topic")
+                    
             elif processSelect[0] == 1:
                 ret = generateOutput.generateSTOutput([userInput],self.name)
                 print(f"HAIBot: {ret}")
