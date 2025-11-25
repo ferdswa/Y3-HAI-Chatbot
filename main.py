@@ -25,11 +25,6 @@ class HAIChatBotMC:
                              f"Hey {self.name}, what can I do for you today?",
                              f"Good {dayPd} {self.name}, how can I help?",
                              f"What's on your mind {self.name}"],
-            r'quit|exit|bye|goodbye|that\'s all|see you': [f"Thanks for chatting {self.name}!",
-                                        f"See you later {self.name}, come back whenever you like",
-                                        f"Have fun {self.name}, come back soon!",
-                                        f"Goodbye",
-                                        f"Bye {self.name}, have a good {dayPd}"],
         }
         self.defaultResponses = [#Fallback option
             f"I'm not sure I quite understand {self.name}, could you rephrase that?",
@@ -84,16 +79,14 @@ class HAIChatBotMC:
                         print("That's all I've got on that topic")
                     
             elif processSelect[0] == 1:
-                ret = generateOutput.generateSTOutput([userInput],self.name)
-                print(f"HAIBot: {ret}")
+                ret = generateOutput.generateSTOutput([userInput],[self.name,dayPd])
+                print(f"HAIBot: {ret[0]}")
+                if(ret[1]==-1):
+                    break
             else:
-                if userInput.lower() in ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']:
-                    exiting = 1
-                
                 response = self.get_response(userInput)
                 print(f"HAIBot: {response}")
-                if(exiting):
-                    break
+                
 
     def getUserName(self):
         print("HAIBot: Hello!\nWhat is your name?")

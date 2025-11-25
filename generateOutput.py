@@ -6,7 +6,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 intentST = {
     'gen' : ["how are you", "how're you", "how are you doing", "how ya doin'", "how ya doin", "how is everything", "how is everything going", "how's everything going"], #Part of a list found: https://stackoverflow.com/questions/51575924/list-of-greetings-phrases-in-english-for-nlp-task
     'capability' : ['what can you do', 'what can you do for me', 'what tasks can you do for me', "what things can you do for me", "what can you help me with", "what can you do to help me", "what can you do to assist me", "what can you do to help me out"],
-    'name': ['what is my name', 'what\'s my name', 'What is my name', 'What\'s my name']
+    'name': ['what is my name', 'what\'s my name', 'What is my name', 'What\'s my name'],
+    'quit': ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']
 }
 
 yesNoIntent ={
@@ -43,6 +44,11 @@ qAGreetingsRn = [
     "more ",
     "additional "
 ]
+goodbyeMsgs = [f"Thanks for chatting $!",
+    f"See you later $, come back whenever you like",
+    f"Have fun $, come back soon!",
+    f"Goodbye",
+    f"Bye $, have a good £"]
 
 
 def generateQAOutput(answer,question:str,roundN:int):#Upgrade this. Currently outputs random choice if >1 answer. TODO: Make it add only new information. See todo in questionsAnswers
@@ -64,7 +70,7 @@ def getAnotherAnswer(leftover, userResponse):
             labels.append(item)
 
     classifier, countVect = trainClassify(data,labels)
-    
+
     nd = userResponse
     pnd = countVect.transform(nd)
     predictedV = classifier.predict(pnd)
@@ -89,11 +95,13 @@ def generateSTOutput(question:str, addIn: str):
     predictedV = classifier.predict(pnd)#Replace below with working to generate output
     predictedV = predictedV[0]
     if predictedV == 'gen':
-        return generateGeneral(addIn)
+        return generateGeneral(addIn[0])
     elif predictedV == 'capability':
         return generateCapability(['small talk','answer questions'])
     elif predictedV == 'name':
-        return generateName(addIn)
+        return generateName(addIn[0])
+    elif predictedV == 'quit':
+        return [generateGoodbye(addIn),-1]
     else:
         return 'failed'
     
@@ -127,4 +135,10 @@ def generateCapability(addIn):
 def generateName(addIn):
     a = random.choice(basicResponse)
     a = (a, a.replace('$',addIn))['$' in a]
+    return a
+
+def generateGoodbye(addIn):
+    a = random.choice(goodbyeMsgs)
+    a = (a,a.replace('$', addIn[0]))['$' in a]
+    a = (a,a.replace('$', addIn[1]))['£' in a]
     return a
