@@ -62,16 +62,9 @@ def getAnotherAnswer(leftover, userResponse):
             resp = string
             data.append(resp)
             labels.append(item)
-    XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
 
-    countVect=CountVectorizer()
-    XTrainCounts = countVect.fit_transform(XTrain)
-
-    tfidfTransformer_ = TfidfTransformer(use_idf=True,sublinear_tf=True).fit(XTrainCounts)
-
-    XTrainTF = tfidfTransformer_.transform(XTrainCounts)
-
-    classifier = LogisticRegression(random_state=0).fit(XTrainTF,yTrain)
+    classifier, countVect = trainClassify(data,labels)
+    
     nd = userResponse
     pnd = countVect.transform(nd)
     predictedV = classifier.predict(pnd)
@@ -88,16 +81,7 @@ def generateSTOutput(question:str, addIn: str):
             data.append(quest)
             labels.append(item)
             
-    XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
-
-    countVect=CountVectorizer()
-    XTrainCounts = countVect.fit_transform(XTrain)
-
-    tfidfTransformer_ = TfidfTransformer(use_idf=True,sublinear_tf=True).fit(XTrainCounts)
-
-    XTrainTF = tfidfTransformer_.transform(XTrainCounts)
-
-    classifier = LogisticRegression(random_state=0).fit(XTrainTF,yTrain)
+    classifier, countVect = trainClassify(data,labels)
 
     nd = question
     pnd = countVect.transform(nd)
@@ -113,6 +97,20 @@ def generateSTOutput(question:str, addIn: str):
     else:
         return 'failed'
     
+def trainClassify(data,labels):
+    XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
+
+    countVect=CountVectorizer()
+    XTrainCounts = countVect.fit_transform(XTrain)
+
+    tfidfTransformer_ = TfidfTransformer(use_idf=True,sublinear_tf=True).fit(XTrainCounts)
+
+    XTrainTF = tfidfTransformer_.transform(XTrainCounts)
+
+    classifier = LogisticRegression(random_state=0).fit(XTrainTF,yTrain)
+    return classifier, countVect
+
+
 def generateGeneral(addIn):
     outputStr = random.choice(botFeelings)
     outputStr = (outputStr, outputStr.replace('$',addIn))['$' in outputStr]
