@@ -7,7 +7,8 @@ intentST = {
     'gen' : ["how are you", "how're you", "how are you doing", "how ya doin'", "how ya doin", "how is everything", "how is everything going", "how's everything going"], #Part of a list found: https://stackoverflow.com/questions/51575924/list-of-greetings-phrases-in-english-for-nlp-task
     'capability' : ['what can you do', 'what can you do for me', 'what tasks can you do for me', "what things can you do for me", "what can you help me with", "what can you do to help me", "what can you do to assist me", "what can you do to help me out"],
     'name': ['what is my name', 'what\'s my name', 'What is my name', 'What\'s my name'],
-    'quit': ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you']
+    'quit': ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you'],
+    'greet': ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening']
 }
 
 yesNoIntent ={
@@ -44,12 +45,12 @@ qAGreetingsRn = [
     "more ",
     "additional "
 ]
-goodbyeMsgs = [f"Thanks for chatting $!",
-    f"See you later $, come back whenever you like",
-    f"Have fun $, come back soon!",
-    f"Goodbye",
-    f"Bye $, have a good £"]
-
+goodbyeMsgs = ["Thanks for chatting $!",
+    "See you later $, come back whenever you like",
+    "Have fun $, come back soon!",
+    "Goodbye",
+    "Bye $, have a good £"]
+greetings = ["Hi there $, what can I help you with?", "What's up $?","Hey $, what can I do for you today?","Good £ $, how can I help?","What's on your mind $"]
 
 def generateQAOutput(answer,question:str,roundN:int):#Upgrade this. Currently outputs random choice if >1 answer. TODO: Make it add only new information. See todo in questionsAnswers
     answer = answer.tolist()
@@ -94,16 +95,19 @@ def generateSTOutput(question:str, addIn: str):
     
     predictedV = classifier.predict(pnd)#Replace below with working to generate output
     predictedV = predictedV[0]
+    print(predictedV)
     if predictedV == 'gen':
-        return generateGeneral(addIn[0])
+        return [generateGeneral(addIn[0]),0]
     elif predictedV == 'capability':
-        return generateCapability(['small talk','answer questions'])
+        return [generateCapability(['small talk','answer questions']),0]
     elif predictedV == 'name':
-        return generateName(addIn[0])
+        return [generateName(addIn[0]),0]
     elif predictedV == 'quit':
         return [generateGoodbye(addIn),-1]
+    elif predictedV == 'greet':
+        return [generateGreeting(addIn),0]
     else:
-        return 'failed'
+        return ['failed',0]
     
 def trainClassify(data,labels):
     XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
@@ -139,6 +143,12 @@ def generateName(addIn):
 
 def generateGoodbye(addIn):
     a = random.choice(goodbyeMsgs)
+    a = (a,a.replace('$', addIn[0]))['$' in a]
+    a = (a,a.replace('$', addIn[1]))['£' in a]
+    return a
+
+def generateGreeting(addIn):
+    a = random.choice(greetings)
     a = (a,a.replace('$', addIn[0]))['$' in a]
     a = (a,a.replace('$', addIn[1]))['£' in a]
     return a

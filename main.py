@@ -19,12 +19,6 @@ class HAIChatBotMC:
     questionsAnswersC = questionsAnswers.questionsAnswers()
     def __init__(self):
         self.patterns = {#Very basic response templates
-            r'question':[f"Sure, what would you like to ask {self.name}?"],
-            r'hello|hi|hey':[f"Hi there {self.name}, what can I help you with?",
-                             f"What's up {self.name}?",
-                             f"Hey {self.name}, what can I do for you today?",
-                             f"Good {dayPd} {self.name}, how can I help?",
-                             f"What's on your mind {self.name}"],
         }
         self.defaultResponses = [#Fallback option
             f"I'm not sure I quite understand {self.name}, could you rephrase that?",
