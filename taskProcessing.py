@@ -79,15 +79,3 @@ class PlaylistManager:
         for song in listOfPlayLists[playlistName]:
             songs.append(song)
         print(songs)
-
-#testing - remember to delete
-# pm = PlaylistManager()
-# pm.createPlaylist("hello")
-# pm.addToPlaylist("hello",["these","are","some","test","songs"])
-# pm.showPlaylist("hello")
-# pm.addToPlaylist("hello",["these"])
-# pm.showPlaylist("hello")
-# pm.removeFromPlaylist("hello",["are","some"])
-# pm.showPlaylist("hello")
-# pm.removeFromPlaylist("hello",["some"])
-# pm.showPlaylist("hello")

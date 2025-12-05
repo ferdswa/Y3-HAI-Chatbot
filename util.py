@@ -23,21 +23,21 @@ def trainClassify(data,labels):
     return classifier, countVect
 
 def getCosForPair( queryVect, currentVectFrQuestions):
-        #Formula: https://en.wikipedia.org/wiki/Cosine_similarity#Definition
-        intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
-        numerator = sum([queryVect[x] * currentVectFrQuestions[x] for x in intersection])
+    #Formula: https://en.wikipedia.org/wiki/Cosine_similarity#Definition
+    intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
+    numerator = sum([queryVect[x] * currentVectFrQuestions[x] for x in intersection])
 
-        sum1 = sum([queryVect[x] ** 2 for x in list(queryVect.keys())])
-        sum2 = sum([currentVectFrQuestions[y] ** 2 for y in list(currentVectFrQuestions.keys())])
-        denominator = math.sqrt(sum1) * math.sqrt(sum2)
+    sum1 = sum([queryVect[x] ** 2 for x in list(queryVect.keys())])
+    sum2 = sum([currentVectFrQuestions[y] ** 2 for y in list(currentVectFrQuestions.keys())])
+    denominator = math.sqrt(sum1) * math.sqrt(sum2)
 
-        if not denominator:
-            return 0.0
-        else:
-            return float(numerator) / denominator
+    if not denominator:
+        return 0.0
+    else:
+        return float(numerator) / denominator
     
 def queryLemmatize(userInput):
-        tokenQ = word_tokenize(userInput)
-        taggedQ = pos_tag(tokenQ)
-        lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
-        return Counter(lemmatizedQ)
+    tokenQ = word_tokenize(userInput)
+    taggedQ = pos_tag(tokenQ)
+    lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
+    return Counter(lemmatizedQ)
