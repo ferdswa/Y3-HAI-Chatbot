@@ -1,8 +1,4 @@
 import random
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-import util
 
 qAGreetingsR1 = [
     "Here's what I found, ",
@@ -94,6 +90,17 @@ def generateGoodbye(addIn):
 
 def generateGreeting(addIn):
     a = random.choice(greetings)
+    a = (a,a.replace('$', addIn[0]))['$' in a]
+    a = (a,a.replace('£', addIn[1]))['£' in a]
+    return a
+
+def getDefault(addIn):
+    ret = random.choice(defaultResponses)
+    ret = (ret, ret.replace('$',addIn))['$' in ret]
+    return ret
+
+def generateQuestionUnAnswerable(addIn):
+    a = random.choice(noQuestionsFoundResponses)
     a = (a,a.replace('$', addIn[0]))['$' in a]
     a = (a,a.replace('£', addIn[1]))['£' in a]
     return a

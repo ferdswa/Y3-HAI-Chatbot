@@ -15,7 +15,7 @@ nltk.download('stopwords')
 nltk.download('averaged_perceptron_tagger_eng')
 
 
-class questionsAnswers:
+class QuestionsAnswers:
     questions = []
     answers = []
     documents = []

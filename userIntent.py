@@ -1,19 +1,8 @@
-from collections import Counter
-import math
 import random
 import datetime
-import re
 import questionsAnswers
 import generateOutput
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-from nltk import pos_tag
-import numpy as np
-from numpy.linalg import norm
-
 import util
-
-lemmatize = WordNetLemmatizer()
 
 dayPd = 'morning'
 
@@ -31,7 +20,7 @@ yesNoIntent ={
 }
 class HAIChatBotMC:
     name = ''
-    questionsAnswersC = questionsAnswers.questionsAnswers()
+    questionsAnswersC = questionsAnswers.QuestionsAnswers()
     
     def introSelf(self):
         print("Hello and welcome to Maxim Carr's HAI Chatbot")
@@ -48,10 +37,7 @@ class HAIChatBotMC:
             if processSelect[0] == 0:
                 dfAnswers = self.questionsAnswersC.answerQuestion(processSelect[1])
                 if 'none' in dfAnswers['documents'].values:#Question wasn't able to be answered
-                    ret = random.choice(generateOutput.noQuestionsFoundResponses)
-                    ret = (ret, ret.replace('$',userInput))['$' in ret]
-                    ret = (ret, ret.replace('£',self.name))['£' in ret]
-                    print(f"HAIBot: {ret}")
+                    print(f"HAIBot: {generateOutput.generateQuestionUnAnswerable([userInput,self.name])}")
                 else:#Question was answered
                     response = dfAnswers['answers'].values
                     resp, leftOver = generateOutput.generateQAOutput(response.tolist(),userInput)
@@ -74,9 +60,7 @@ class HAIChatBotMC:
                 if(ret[1]==-1):
                     break
             else:
-                ret = random.choice(generateOutput.defaultResponses)
-                ret = (ret, ret.replace('$',self.name))['$' in ret]
-                print(f"HAIBot: {ret}")
+                print(f"HAIBot: {generateOutput.getDefault(self.name)}")
                 
 
     def getUserName(self):
@@ -97,18 +81,18 @@ class HAIChatBotMC:
         highQ = []
         highST = 0
         a = 0
-        uIC = self.queryLemmatize(uI)
+        uIC = util.queryLemmatize(uI)
         for item in intentST:
             for string in intentST[item]:
                 datasetST.append(string)
         for curQuestion in datasetQA:
-            a = self.getCosForPair(uIC,curQuestion)
+            a = util.getCosForPair(uIC,curQuestion)
             if a>highQA:
                 highQA = a
                 highQ = curQuestion
         for curSmallTalk in datasetST:
-            cSTL = self.queryLemmatize(curSmallTalk)
-            a = self.getCosForPair(uIC,cSTL)
+            cSTL = util.queryLemmatize(curSmallTalk)
+            a = util.getCosForPair(uIC,cSTL)
             if a>highST:
                 highST = a
         print(highQA, highST)
@@ -118,27 +102,6 @@ class HAIChatBotMC:
             return [1,None]
         else:
             return [-1,None]
-        
-    def getCosForPair(self, queryVect, currentVectFrQuestions):
-        #Keys = tokens, values = numbers
-        #Formula: https://en.wikipedia.org/wiki/Cosine_similarity#Definition
-        intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
-        numerator = sum([queryVect[x] * currentVectFrQuestions[x] for x in intersection])
-
-        sum1 = sum([queryVect[x] ** 2 for x in list(queryVect.keys())])
-        sum2 = sum([currentVectFrQuestions[y] ** 2 for y in list(currentVectFrQuestions.keys())])
-        denominator = math.sqrt(sum1) * math.sqrt(sum2)
-
-        if not denominator:
-            return 0.0
-        else:
-            return float(numerator) / denominator
-    
-    def queryLemmatize(self, userInput):
-        tokenQ = word_tokenize(userInput)
-        taggedQ = pos_tag(tokenQ)
-        lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
-        return Counter(lemmatizedQ)
     
     def smallTalkIntent(self,question:str, addIn):
         data = []
