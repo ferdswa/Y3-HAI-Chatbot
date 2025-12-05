@@ -11,9 +11,26 @@ from nltk import pos_tag
 import numpy as np
 from numpy.linalg import norm
 
+import util
+
 lemmatize = WordNetLemmatizer()
 
 dayPd = 'morning'
+
+
+
+intentST = {
+    'gen' : ["how are you", "how're you", "how are you doing", "how ya doin'", "how ya doin", "how is everything", "how is everything going", "how's everything going"], #Part of a list found: https://stackoverflow.com/questions/51575924/list-of-greetings-phrases-in-english-for-nlp-task
+    'capability' : ['what can you do', 'what can you do for me', 'what tasks can you do for me', "what things can you do for me", "what can you help me with", "what can you do to help me", "what can you do to assist me", "what can you do to help me out"],
+    'name': ['what is my name', 'what\'s my name', 'What is my name', 'What\'s my name'],
+    'quit': ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you'],
+    'greet': ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening']
+}
+
+yesNoIntent ={
+    'yes' : ["yes","yeah","sure","of course","ok","y"],
+    'no' : ["no","nah", "no thanks", "no thank you", "i'm good", "n"]
+}
 class HAIChatBotMC:
     name = ''
     questionsAnswersC = questionsAnswers.questionsAnswers()
@@ -48,8 +65,8 @@ class HAIChatBotMC:
         print("-" * 50)
         self.name = self.getUserName()
         self.__init__()#Reinitialise to grab name
-        response = self.get_response("hi")
-        print(f"HAIBot: {response}")
+        response = self.smallTalkIntent(["hi"],self.name)
+        print(f"HAIBot: {response[0]}")
         while True:
             exiting = 0
             userInput = input(f"{self.name}: ").lower()
@@ -63,17 +80,22 @@ class HAIChatBotMC:
                     print(f"HAIBot: {ret}")
                 else:#Question was answered
                     response = dfAnswers['answers'].values
-                    resp, leftOver = generateOutput.generateQAOutput(response,userInput,0)
+                    resp, leftOver = generateOutput.generateQAOutput(response.tolist(),userInput)
                     print(f"HAIBot: {resp}")
-                    if(len(leftOver)>0):
-                        ur = input("HAIBot: Would you like to know more?")
-                        generateOutput.getAnotherAnswer(leftOver,[ur])
-
-                    else:
-                        print("That's all I've got on that topic")
+                    while(leftOver is not None):
+                        if(len(leftOver)>0):
+                            print("HAIBot: Would you like to know more?")
+                            ur = input(f"{self.name}: ").lower()
+                            resp, leftOver = self.getAnotherAnswer(leftOver,[ur],userInput)
+                            print(f"HAIBot: {resp}")
+                        else:
+                            print("HAIBot: That's all I've got on that topic")
+                            leftOver = None
+                    response = self.smallTalkIntent(["hi"],self.name)
+                    print(f"HAIBot: {response[0]}")
                     
             elif processSelect[0] == 1:
-                ret = generateOutput.generateSTOutput([userInput],[self.name,dayPd])
+                ret = self.smallTalkIntent([userInput],self.name)
                 print(f"HAIBot: {ret[0]}")
                 if(ret[1]==-1):
                     break
@@ -101,8 +123,8 @@ class HAIChatBotMC:
         highST = 0
         a = 0
         uIC = self.queryLemmatize(uI)
-        for item in generateOutput.intentST:
-            for string in generateOutput.intentST[item]:
+        for item in intentST:
+            for string in intentST[item]:
                 datasetST.append(string)
         for curQuestion in datasetQA:
             a = self.getCosForPair(uIC,curQuestion)
@@ -114,7 +136,6 @@ class HAIChatBotMC:
             a = self.getCosForPair(uIC,cSTL)
             if a>highST:
                 highST = a
-        print(highQA,highST)
         if max(highQA,highST) == highQA and highQA>0.7:
             return [0,highQ]
         elif max(highQA,highST) == highST and highST>0.7:
@@ -142,6 +163,56 @@ class HAIChatBotMC:
         taggedQ = pos_tag(tokenQ)
         lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
         return Counter(lemmatizedQ)
+    
+    def smallTalkIntent(self,question:str, addIn):
+        data = []
+        labels =[]
+        for item in intentST:
+            for string in intentST[item]:
+                quest = string
+                data.append(quest)
+                labels.append(item)
+                
+        classifier, countVect = util.trainClassify(data,labels)
+
+        nd = question
+        pnd = countVect.transform(nd)
+        
+        predictedV = classifier.predict(pnd)#Replace below with working to generate output
+        predictedV = predictedV[0]
+        if predictedV == 'gen':
+            return [generateOutput.generateGeneral(addIn),0]
+        elif predictedV == 'capability':
+            return [generateOutput.generateCapability(['small talk','answer questions']),0]
+        elif predictedV == 'name':
+            return [generateOutput.generateName(addIn),0]
+        elif predictedV == 'quit':
+            return [generateOutput.generateGoodbye([addIn,dayPd]),-1]
+        elif predictedV == 'greet':
+            return [generateOutput.generateGreeting([addIn,dayPd]),0]
+        else:
+            return ['failed',0]
+        
+    def getAnotherAnswer(self, leftover, userResponse, question):
+        data = []
+        labels = []
+        for item in yesNoIntent:
+            for string in yesNoIntent[item]:
+                resp = string
+                data.append(resp)
+                labels.append(item)
+
+        classifier, countVect = util.trainClassify(data,labels)
+
+        nd = userResponse
+        pnd = countVect.transform(nd)
+        predictedV = classifier.predict(pnd)
+        predictedV = predictedV[0]#Determined if user has entered a yes or no
+        if predictedV == 'yes':
+            resp, leftOver = generateOutput.generateQAOutput(leftover,question)
+            return resp, leftOver
+        else:
+            return generateOutput.generateNoMoreAnswers(self.name), None
 
 if(__name__ == '__main__'):
     x = datetime.datetime.now().hour
@@ -154,3 +225,4 @@ if(__name__ == '__main__'):
     if(__name__=='__main__'):
         cb = HAIChatBotMC()
         cb.introSelf()
+
