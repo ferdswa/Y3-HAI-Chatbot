@@ -41,6 +41,20 @@ goodbyeMsgs = ["Thanks for chatting $!",
     "Bye $, have a good £"]
 greetings = ["Hi there $, what can I help you with?", "What's up $?","Hey $, what can I do for you today?","Good £ $, how can I help?","What's on your mind $"]
 
+defaultResponses = [#Fallback option
+    f"I'm not sure I quite understand $, could you rephrase that?",
+    f"I'm quite new and I can't do that yet. Anything else you'd like to talk about $?",
+    f"That's interesting, could you expand $?",
+    f"I'm sorry $, I couldn't understand that. Could you put it in different words?"
+]
+
+noQuestionsFoundResponses = [
+    f"I don't have access to that information £. Would you like to talk about anything else?",
+    f"I'm not quite sure £. Do you want to know about something else?",
+    f"I couldn't find anything about $, can I help you with anything else £?"
+]
+
+
 def generateQAOutput(answer:list,question:str):#Upgrade this. Currently outputs random choice if >1 answer. TODO: Make it add only new information. See todo in questionsAnswers
     outputStr = random.choice(qAGreetingsR1)
     select = random.choice(answer)

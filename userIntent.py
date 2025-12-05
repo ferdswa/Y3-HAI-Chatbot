@@ -17,8 +17,6 @@ lemmatize = WordNetLemmatizer()
 
 dayPd = 'morning'
 
-
-
 intentST = {
     'gen' : ["how are you", "how're you", "how are you doing", "how ya doin'", "how ya doin", "how is everything", "how is everything going", "how's everything going"], #Part of a list found: https://stackoverflow.com/questions/51575924/list-of-greetings-phrases-in-english-for-nlp-task
     'capability' : ['what can you do', 'what can you do for me', 'what tasks can you do for me', "what things can you do for me", "what can you help me with", "what can you do to help me", "what can you do to assist me", "what can you do to help me out"],
@@ -34,30 +32,6 @@ yesNoIntent ={
 class HAIChatBotMC:
     name = ''
     questionsAnswersC = questionsAnswers.questionsAnswers()
-    def __init__(self):
-        self.patterns = {#Very basic response templates
-        }
-        self.defaultResponses = [#Fallback option
-            f"I'm not sure I quite understand {self.name}, could you rephrase that?",
-            f"I'm quite new and I can't do that yet. Anything else you'd like to talk about {self.name}?",
-            f"That's interesting, could you expand {self.name}?",
-            f"I'm sorry {self.name}, I couldn't understand that. Could you put it in different words?"
-        ]
-        self.noQuestionsFoundResponses = [
-            f"I don't have access to that information {self.name}. Would you like to talk about anything else?",
-            f"I'm not quite sure {self.name}. Do you want to know about something else?",
-            f"I couldn't find anything about $, can I help you with anything else {self.name}?"
-        ]
-    def get_response(self, user_input):
-        user_input = user_input.lower().strip()
-        
-        # Check each pattern for matches
-        for pattern, responses in self.patterns.items():
-            if re.search(pattern, user_input, re.IGNORECASE):
-                return random.choice(responses)
-    
-        # Return default response if no pattern matches
-        return random.choice(self.defaultResponses)
     
     def introSelf(self):
         print("Hello and welcome to Maxim Carr's HAI Chatbot")
@@ -68,15 +42,15 @@ class HAIChatBotMC:
         response = self.smallTalkIntent(["hi"],self.name)
         print(f"HAIBot: {response[0]}")
         while True:
-            exiting = 0
             userInput = input(f"{self.name}: ").lower()
             processSelect = self.findMostSimilarProc(userInput)
 
             if processSelect[0] == 0:
                 dfAnswers = self.questionsAnswersC.answerQuestion(processSelect[1])
                 if 'none' in dfAnswers['documents'].values:#Question wasn't able to be answered
-                    ret = random.choice(self.noQuestionsFoundResponses)
+                    ret = random.choice(generateOutput.noQuestionsFoundResponses)
                     ret = (ret, ret.replace('$',userInput))['$' in ret]
+                    ret = (ret, ret.replace('£',self.name))['£' in ret]
                     print(f"HAIBot: {ret}")
                 else:#Question was answered
                     response = dfAnswers['answers'].values
@@ -100,8 +74,9 @@ class HAIChatBotMC:
                 if(ret[1]==-1):
                     break
             else:
-                response = self.get_response(userInput)
-                print(f"HAIBot: {response}")
+                ret = random.choice(generateOutput.defaultResponses)
+                ret = (ret, ret.replace('$',self.name))['$' in ret]
+                print(f"HAIBot: {ret}")
                 
 
     def getUserName(self):
@@ -136,6 +111,7 @@ class HAIChatBotMC:
             a = self.getCosForPair(uIC,cSTL)
             if a>highST:
                 highST = a
+        print(highQA, highST)
         if max(highQA,highST) == highQA and highQA>0.7:
             return [0,highQ]
         elif max(highQA,highST) == highST and highST>0.7:
