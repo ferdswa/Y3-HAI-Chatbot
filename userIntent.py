@@ -99,7 +99,6 @@ class HAIChatBotMC:
             a = util.getCosForPair(uIC,cSTL)
             if a>highST:
                 highST = a
-        print(highQA, highST)
         if max(highQA,highST) == highQA and highQA>0.7:
             return [0,highQ]
         elif max(highQA,highST) == highST and highST>0.6:
@@ -126,7 +125,7 @@ class HAIChatBotMC:
         if predictedV == 'gen':
             return [generateOutput.generateGeneral(addIn),0]
         elif predictedV == 'capability':
-            return [generateOutput.generateCapability(['small talk','answer questions']),0]
+            return [generateOutput.generateCapability(['small talk','answer questions','get weather','playlist management']),0]
         elif predictedV == 'quit':
             return [generateOutput.generateGoodbye([addIn,dayPd]),-1]
         elif predictedV == 'greet':
@@ -150,8 +149,6 @@ class HAIChatBotMC:
                 a = util.getCosForPair(lemmatizeQ,currentStringLemmatized)
                 if a>highName:
                     highName = a
-            print(highName,highIdent)
-
             if(highIdent>highName):
                 listOfWords = question[0].split(" ")
                 self.name = listOfWords[len(listOfWords)-1]
