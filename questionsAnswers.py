@@ -2,7 +2,6 @@ from collections import Counter
 import re
 import nltk
 import csv,os,pandas as pd
-from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag

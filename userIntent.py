@@ -1,4 +1,3 @@
-import random
 import datetime
 import questionsAnswers
 import generateOutput
