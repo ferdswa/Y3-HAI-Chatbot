@@ -1,4 +1,5 @@
 import datetime
+import re
 import questionsAnswers
 import generateOutput
 import util
@@ -8,15 +9,18 @@ dayPd = 'morning'
 intentST = {
     'gen' : ["how are you", "how're you", "how are you doing", "how ya doin'", "how ya doin", "how is everything", "how is everything going", "how's everything going"], #Part of a list found: https://stackoverflow.com/questions/51575924/list-of-greetings-phrases-in-english-for-nlp-task
     'capability' : ['what can you do', 'what can you do for me', 'what tasks can you do for me', "what things can you do for me", "what can you help me with", "what can you do to help me", "what can you do to assist me", "what can you do to help me out"],
-    'name': ['what is my name', 'what\'s my name', 'What is my name', 'What\'s my name'],
-    'quit': ['quit', 'exit', 'bye', 'goodbye', 'that\'s all', 'see you'],
-    'greet': ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening']
+    'name': ['what is my name', 'whats my name', 'What is my name', 'Whats my name'],
+    'quit': ['quit', 'exit', 'bye', 'goodbye', 'thats all', 'see you'],
+    'greet': ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening'],
+    'weather': ['whats the weather', 'hows the weather', 'what is the weather','what is the weather', 'what is the weather like'],
+    'im': ['call me', 'my name is', 'my names', 'change my name to']
 }
 
 yesNoIntent ={
     'yes' : ["yes","yeah","sure","of course","ok","y"],
     'no' : ["no","nah", "no thanks", "no thank you", "i'm good", "n"]
 }
+
 class HAIChatBotMC:
     name = ''
     questionsAnswersC = questionsAnswers.QuestionsAnswers()
@@ -31,6 +35,7 @@ class HAIChatBotMC:
         print(f"HAIBot: {response[0]}")
         while True:
             userInput = input(f"{self.name}: ").lower()
+            userInput = re.sub(r'[^\w\s]','',userInput)#remove punctuation as all the datasets ignore it
             processSelect = self.findMostSimilarProc(userInput)
 
             if processSelect[0] == 0:
@@ -72,7 +77,7 @@ class HAIChatBotMC:
             return n
         
     #Find cos similarity for each process and return which is most similar
-    def findMostSimilarProc(self,uI):
+    def findMostSimilarProc(self,userInput):
         datasetQA = self.questionsAnswersC.questionVs#Vectors of questions in qa
         datasetST = []
         datasetTA = []
@@ -80,7 +85,7 @@ class HAIChatBotMC:
         highQ = []
         highST = 0
         a = 0
-        uIC = util.queryLemmatize(uI)
+        uIC = util.queryLemmatize(userInput)
         for item in intentST:
             for string in intentST[item]:
                 datasetST.append(string)
@@ -97,7 +102,7 @@ class HAIChatBotMC:
         print(highQA, highST)
         if max(highQA,highST) == highQA and highQA>0.7:
             return [0,highQ]
-        elif max(highQA,highST) == highST and highST>0.7:
+        elif max(highQA,highST) == highST and highST>0.6:
             return [1,None]
         else:
             return [-1,None]
@@ -122,12 +127,38 @@ class HAIChatBotMC:
             return [generateOutput.generateGeneral(addIn),0]
         elif predictedV == 'capability':
             return [generateOutput.generateCapability(['small talk','answer questions']),0]
-        elif predictedV == 'name':
-            return [generateOutput.generateName(addIn),0]
         elif predictedV == 'quit':
             return [generateOutput.generateGoodbye([addIn,dayPd]),-1]
         elif predictedV == 'greet':
             return [generateOutput.generateGreeting([addIn,dayPd]),0]
+        elif predictedV == 'weather':
+            return [generateOutput.generateWeather(),0]
+        elif predictedV == 'im' or predictedV == 'name':
+            #cosine similarity
+            datasetIM = intentST['im']
+            datasetNM = intentST['name']
+            highName = 0
+            highIdent = 0
+            lemmatizeQ = util.queryLemmatize(question[0])
+            for currentString in datasetIM:
+                currentStringLemmatized = util.queryLemmatize(currentString)
+                a = util.getCosForPair(lemmatizeQ,currentStringLemmatized)
+                if a>highIdent:
+                    highIdent = a
+            for currentString in datasetNM:
+                currentStringLemmatized = util.queryLemmatize(currentString)
+                a = util.getCosForPair(lemmatizeQ,currentStringLemmatized)
+                if a>highName:
+                    highName = a
+            print(highName,highIdent)
+
+            if(highIdent>highName):
+                listOfWords = question[0].split(" ")
+                self.name = listOfWords[len(listOfWords)-1]
+                return self.smallTalkIntent(["hi"],self.name)
+            else:
+                return [generateOutput.generateName(addIn),0]
+            
         else:
             return ['failed',0]
         
