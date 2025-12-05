@@ -23,7 +23,6 @@ def trainClassify(data,labels):
     return classifier, countVect
 
 def getCosForPair( queryVect, currentVectFrQuestions):
-        #Keys = tokens, values = numbers
         #Formula: https://en.wikipedia.org/wiki/Cosine_similarity#Definition
         intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
         numerator = sum([queryVect[x] * currentVectFrQuestions[x] for x in intersection])
@@ -37,7 +36,7 @@ def getCosForPair( queryVect, currentVectFrQuestions):
         else:
             return float(numerator) / denominator
     
-def queryLemmatize(self, userInput):
+def queryLemmatize(userInput):
         tokenQ = word_tokenize(userInput)
         taggedQ = pos_tag(tokenQ)
         lemmatizedQ = [lemmatize.lemmatize(word, pos='v' if tag.startswith('V') else 'n') for word, tag in taggedQ]
