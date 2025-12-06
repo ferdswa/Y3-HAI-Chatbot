@@ -71,7 +71,7 @@ class HAIChatBotMC:
                     print(f"HAIBot: {response[0]}")
                     
             elif processSelect[0] == 1:
-                ret = self.smallTalkIntent([processSelect[1]],self.name)#Don't need to use the actual user input, just most similar
+                ret = self.smallTalkIntent([processSelect[1]],self.name)
                 print(f"HAIBot: {ret[0]}")
                 if(ret[1]==-1):
                     break
@@ -121,7 +121,6 @@ class HAIChatBotMC:
             a = util.getCosForPair(userInputLemmatized,cSTL)
             if a>highST:
                 highST = a
-                highSTQuery = curSmallTalk
         resultRound1 = max(highQA,highST)
         if(resultRound1 == highQA):
             for curPlaylistOp in datasetTA:
@@ -137,15 +136,14 @@ class HAIChatBotMC:
                 if a>highST and a>highTA:
                     highTA = a
                     highTAQ = curPlaylistOp
-        print(highTA,highST,highQA)
         if highTA == 0:#Transaction less similar
             if max(highQA,highST) == highQA and highQA>0.7:
                 return [0,highQLemmatized]
             elif max(highQA,highST) == highST and highST>0.6:
-                return [1,highSTQuery]
+                return [1,userInput]
             else:
                 return [-1,None]
-        elif highTA>0/6:#Transaction more similar
+        elif highTA>0.4:#Transaction more similar
             return[2,highTAQ]
         else:
             return [-1,None]
@@ -222,21 +220,12 @@ class HAIChatBotMC:
                 if(part2 == part):
                     final.append(part2)
 
-        data = []
-        labels =[]
-        for item in playListIntent:
-            for string in playListIntent[item]:
-                quest = string
-                data.append(quest)
-                labels.append(item)
-                
-        classifier, countVect = util.trainClassify(data,labels)
 
-        nd = [userInput]
-        pnd = countVect.transform(nd)
-        
-        predictedV = classifier.predict(pnd)
-        predictedV = predictedV[0]
+        predictedV = ""
+        for k in playListIntent:
+            for v in playListIntent[k]:
+                if v == predictedQ:
+                    predictedV=k
 
         if(len(final)>0):
             final2 = ' '.join(final)
@@ -251,7 +240,10 @@ class HAIChatBotMC:
         if predictedV == "new":
             return [self.pm.createPlaylist(final2),0]
         elif predictedV == "delete":
-            return [self.pm.deletePlaylist(final2),0]
+            try:
+                return [self.pm.deletePlaylist(final2),0]
+            except FileNotFoundError:
+                return ["This playlist doesn't exist, so there is nothing for me to delete"]
         elif predictedV == "clear":
             return [self.pm.clearPlaylist(final2),0]
         elif predictedV == "show":
@@ -279,8 +271,8 @@ class HAIChatBotMC:
             else:
                 return [self.pm.removeFromPlaylist(firstFound,final),0]
         else:
-            return generateOutput.getDefault(self.nameMa)
-            
+            return generateOutput.getDefault(self.name)
+
             
         
     def getAnotherAnswer(self, leftover, userResponse, question):
