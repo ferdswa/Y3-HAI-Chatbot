@@ -1,4 +1,6 @@
+import csv
 import datetime
+import os
 import re
 import questionsAnswers
 import generateOutput
@@ -10,12 +12,30 @@ dayPd = 'morning'
 intentST = intentLists.intentST
 yesNoIntent = intentLists.yesNoIntent
 playListIntent = intentLists.playListIntent
+#https://huggingface.co/datasets/OpenVoiceOS/yes_no_answers
+yesNoDir = os.path.dirname(os.path.abspath(__file__))+os.sep+"yesno.csv"
 
 class HAIChatBotMC:
     name = ''
     questionsAnswersC = questionsAnswers.QuestionsAnswers()
     pm = playlistManager.PlaylistManager()
-    
+
+    def __init__(self):
+        try:
+            with open(yesNoDir, 'r') as yesnoCSV:
+                yesNoIntent["yes"]=[]
+                yesNoIntent["no"]=[]
+                csvFile = csv.reader(yesnoCSV)
+                for line in csvFile:
+                    if line[1] == 'yes':
+                        yesNoIntent['yes'].append(line[0])
+                    elif line[1] == 'no':
+                        yesNoIntent['no'].append(line[0])
+                
+        except FileNotFoundError:
+            print("HAIBot: I'm missing the yes/no dataset csv file. Falling back to default yes no classification, accuraccy may be reduced.")
+            
+
     def introSelf(self):
         print("Hello and welcome to Maxim Carr's HAI Chatbot")
         print("Please enter a prompt below")
