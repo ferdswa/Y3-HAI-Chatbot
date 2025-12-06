@@ -1,0 +1,442 @@
+utterance,agreement
+"I agree",yes
+"I disagree",no
+"absolutely certain",yes
+"absolutely not",no
+"absolutely",yes
+"affirmative",yes
+"agreed upon",yes
+"agreed",yes
+"all right",yes
+"as if",no
+"ask again tomorrow",None
+"aye",yes
+"by all means",yes
+"by no means yes",no
+"by no means",no
+"can't agree to that",no
+"can't agree with that",no
+"can't do that",no
+"can't say yes to that",no
+"can’t answer that now",None
+"can’t decide right now",None
+"can’t deny it",yes
+"can’t make up my mind",None
+"can’t say yes or no",None
+"certainly",yes
+"close enough",yes
+"consider it done",yes
+"consider me out",no
+"considering all options",None
+"correct, he is lying",yes
+"could be true",None
+"could be",None
+"could go either direction",None
+"could go either way",None
+"could swing both ways",None
+"couldn't agree more",yes
+"couldn't be better",yes
+"couldn’t be further from the truth",no
+"count me in",yes
+"count me in, for sure",yes
+"count me out",no
+"definitely a no",no
+"definitely",yes
+"depends on the day",None
+"disagreed",no
+"do I hate it when companies sell my data? yes, that's certainly undesirable",yes
+"do as you wish",yes
+"don't bet on it",no
+"don't count on it",no
+"don't think so",no
+"don’t ask me",None
+"don’t even ask",no
+"don’t even mention it",no
+"don’t even think about it",no
+"don’t get too excited",no
+"don’t get your hopes up",no
+"don’t have a preference",None
+"don’t have an answer",None
+"don’t hold your breath",no
+"don’t push it",no
+"don’t see it happening",no
+"don’t see why not",yes
+"don’t waste your breath",no
+"far from it",no
+"fine by me",yes
+"fine with me",yes
+"for sure",yes
+"forget it",no
+"good call",yes
+"good point",yes
+"got my vote",yes
+"hard pass",no
+"hard to say",None
+"he is lying",no
+"he is not lying",yes
+"heck no",no
+"heck yes",yes
+"i can get behind that",yes
+"i can get with that",yes
+"i can't argue with that",yes
+"i cannot agree",no
+"i can’t commit",None
+"i couldn't say no to that",yes
+"i couldn’t agree more",yes
+"i couldn’t say no",yes
+"i don't think so",no
+"i don’t have all the facts",None
+"i don’t know at the moment",None
+"i got no beef with it",yes
+"i guess so",yes
+"i have mixed feelings",None
+"i have my doubts",no
+"i haven’t made up my mind",None
+"i might consider it",None
+"i need more time",None
+"i really think so",yes
+"i second that",yes
+"i support that",yes
+"i think not",no
+"i think so",yes
+"i want it for sure",yes
+"i wish",no
+"i would love that",yes
+"i would prefer not to",no
+"i would rather not",no
+"i wouldn't say yes",no
+"i wouldn’t count on it",no
+"i wouldn’t dare",no
+"i wouldn’t mind",yes
+"i wouldn’t touch it",no
+"i'd say yes",yes
+"i'll have to pass",no
+"i'll pass on that",no
+"i'll pass",no
+"i'm afraid not",no
+"i'm down for that",yes
+"i'm in",yes
+"i'm not buying it",no
+"i'm not so sure",no
+"i'm not sure about that",no
+"i'm with you on that",yes
+"if it pleases you",yes
+"if only",no
+"if you say so",yes
+"indeed",yes
+"it could go either way",None
+"it wouldn’t work for me",no
+"it's a lie",no
+"it's a solid no",no
+"it's all good",yes
+"it's beyond doubt",yes
+"it's not a lie",yes
+"it’s a gray area",None
+"it’s a long shot",no
+"it’s a maybe",None
+"it’s a possibility",None
+"it’s a toss-up",None
+"it’s a wait-and-see",None
+"it’s a work in progress",None
+"it’s a yes for me",yes
+"it’s a yes from me",yes
+"it’s all good",yes
+"it’s beyond me",no
+"it’s complicated",None
+"it’s crystal clear",yes
+"it’s not black or white",None
+"it’s not definite",None
+"it’s not for me",no
+"it’s not out of the question",None
+"it’s obvious",yes
+"it’s open for discussion",None
+"it’s pending",None
+"it’s settled then",yes
+"it’s settled",yes
+"it’s under consideration",None
+"it’s under review",None
+"it’s up to you",None
+"it’s up to you",yes
+"i’d rather not",no
+"i’d rather say no",no
+"i’ll allow it",yes
+"i’ll get back to you",None
+"i’ll give it a go",yes
+"i’ll give it some thought",None
+"i’ll give you that",yes
+"i’ll have to pass",no
+"i’ll have to say no",no
+"i’ll sleep on it",None
+"i’ll stand by that",yes
+"i’ll stick with it",yes
+"i’ll support that",yes
+"i’ll take a rain check",no
+"i’ll think about it",None
+"i’m all ears",yes
+"i’m all in",yes
+"i’m considering it",None
+"i’m cool with it",yes
+"i’m hesitant",None
+"i’m keeping it open",None
+"i’m leaning toward yes",yes
+"i’m mulling it over",None
+"i’m not opposed",yes
+"i’m not sure yet",None
+"i’m on board",yes
+"i’m on the fence",None
+"i’m on your side",yes
+"i’m pondering it",None
+"i’m reserving judgment",None
+"i’m torn",None
+"i’m undecided",None
+"keeping options open",None
+"let's do it",yes
+"let’s discuss it later",None
+"let’s leave it open",None
+"let’s move forward",yes
+"let’s not rush into it",None
+"let’s put a pin in it",None
+"let’s revisit this",None
+"make it happen",yes
+"make it so",yes
+"maybe later",None
+"might be",None
+"nah",no
+"nay",no
+"need more details",None
+"need to check",None
+"negative",no
+"never in my life",no
+"no argument from me",yes
+"no argument there",yes
+"no chance in hell",no
+"no chance",no
+"no comment",None
+"no deal",no
+"no decision yet",None
+"no dice",no
+"no doubt",yes
+"no final decision",None
+"no hard feelings",no
+"no ifs, ands, or buts",no
+"no matter what",no
+"no means no",no
+"no objections here",yes
+"no offense, but no",no
+"no offense, but that’s a no",no
+"no promises",None
+"no question about it",yes
+"no reason to say no",yes
+"no room for doubt",yes
+"no set answer",None
+"no shot",no
+"no sir",no
+"no strings attached",yes
+"no thank you",no
+"no thanks",no
+"no way in hell",no
+"no way jose",no
+"no way",no
+"no way, not even close",no
+"no worries",yes
+"no! please! I beg you",no
+"no",no
+"no, I obviously hate it",no
+"no, but actually, yes",yes
+"no, i'm uncertain",no
+"no, it's a lie",no
+"no, never",no
+"no, not exactly",no
+"no, sorry",no
+"no, that’s a no-go",no
+"nope",no
+"nope, absolutely not",no
+"nope, i'm good",no
+"nope, it’s a no",no
+"nope, nada",no
+"nope, never",no
+"nope, no thanks",no
+"nope, not at all",no
+"nope, not buying it",no
+"not 100% certain",None
+"not a chance",no
+"not a fan of that idea",no
+"not a fan",no
+"not a good idea",no
+"not as far as i know",no
+"not at all sure",no
+"not at all",no
+"not buying it",no
+"not by a long shot",no
+"not convinced",no
+"not cut and dried",None
+"not enough information",None
+"not entirely convinced",None
+"not even close",no
+"not exactly",no
+"not feeling it",no
+"not gonna happen",no
+"not gonna lie, no",no
+"not happening",no
+"not if i can help it",no
+"not if my life depended on it",no
+"not if you paid me",no
+"not in a million years",no
+"not in my book",no
+"not in this lifetime",no
+"not interested",no
+"not making any promises",None
+"not my cup of tea",no
+"not my style",no
+"not my thing",no
+"not now",None
+"not on your life",no
+"not possible",no
+"not quite what i meant",no
+"not really my thing",no
+"not really",no
+"not settled yet",None
+"not so fast",no
+"not sure at this time",None
+"not sure if i can",None
+"not that i know of",no
+"not this time",no
+"not today",no
+"not what i expected",no
+"not what i had in mind",no
+"not worth it",no
+"nothing could be more true",yes
+"now you're talking",yes
+"nuh-uh",no
+"obviously",yes
+"of course",yes
+"ok, sounds good",yes
+"okay",yes
+"on hold for now",None
+"on the contrary",no
+"open to interpretation",None
+"over my dead body",no
+"please don't",no
+"please! I beg you",yes
+"please",yes
+"possibly",yes
+"probably not",no
+"right on",yes
+"right where it belongs",yes
+"roger that",yes
+"sign me up",yes
+"still in the works",None
+"still on the table",None
+"still thinking about it",None
+"still undecided",None
+"sure thing",yes
+"take it or leave it",None
+"take my word for it",yes
+"that sounds about right",yes
+"that works for me",yes
+"that would be great",yes
+"that's a firm yes",yes
+"that's a given",yes
+"that's a mistake",no
+"that's a no-go for me",no
+"that's a strong no",no
+"that's a yes from me",yes
+"that's affirmative",yes
+"that's certainly undesirable",no
+"that's correct",yes
+"that's exactly it",yes
+"that's incorrect",no
+"that's right",yes
+"that’s a big yes",yes
+"that’s a given",yes
+"that’s a good one",yes
+"that’s a tough call",None
+"that’s a wrap",yes
+"that’s affirmative",yes
+"that’s an option",None
+"that’s cool with me",yes
+"that’s debatable",None
+"that’s how it’s done",yes
+"that’s just it",yes
+"that’s more like it",yes
+"that’s my answer",yes
+"that’s my point",yes
+"that’s not clear to me",None
+"that’s not going to happen",no
+"that’s spot on",yes
+"that’s the idea",yes
+"that’s the spirit",yes
+"that’s the way",yes
+"that’s what i’m talking about",yes
+"that’s wishful thinking",no
+"there are pros and cons",None
+"there’s a chance",None
+"there’s no easy answer",None
+"thinking about it",None
+"to be determined",None
+"totally agree",yes
+"uh-huh",yes
+"understood",yes
+"up in the air",None
+"we could look into it",None
+"we haven’t decided",None
+"we haven’t finalized",None
+"we might get to that",None
+"we might",None
+"we need more input",None
+"we’ll circle back to that",None
+"we’ll have to wait and see",None
+"we’ll play it by ear",None
+"we’ll see",None
+"we’ll talk about it",None
+"we’re evaluating",None
+"we’re still considering",None
+"who’s to say?",None
+"why not",yes
+"without a doubt",yes
+"without a shadow of a doubt",yes
+"without a shadow of doubt",yes
+"without question",yes
+"without question, yes",yes
+"wouldn’t dream of it",no
+"wouldn’t miss it",yes
+"wrong answer",no
+"yeah",yes
+"yeah, yeah",yes
+"yep",yes
+"yes please",yes
+"yes sir",yes
+"yes",yes
+"yes, absolutely",yes
+"yes, but actually, no",no
+"yes, certainly",yes
+"yes, i am sure",yes
+"yes, i don't want it for sure",no
+"yes, it's a lie",yes
+"yes, please do",yes
+"yes, yes, yes",yes
+"yes, yes, yes, but actually, no",no
+"you are mistaken",no
+"you are not mistaken",yes
+"you are not wrong",yes
+"you bet",yes
+"you can count on it",yes
+"you got it right",yes
+"you got it",yes
+"you got my blessing",yes
+"you guessed it right",yes
+"you have my blessing",yes
+"you have my word",yes
+"you hit the nail on the head",yes
+"you know it",yes
+"you missed the mark",no
+"you nailed it",yes
+"you read my mind",yes
+"you said it",yes
+"you're dead right",yes
+"you're on the money",yes
+"you’re barking up the wrong tree",no
+"you’re not wrong",yes
+"you’re right",yes
+"you’re spot on",yes
+"you’ve got it",yes
