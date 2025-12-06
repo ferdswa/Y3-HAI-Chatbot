@@ -2,18 +2,29 @@ import datetime
 import re
 import questionsAnswers
 import generateOutput
+import playlistManager
 import util
 
 dayPd = 'morning'
 
 intentST = {
-    'gen' : ["how are you", "how're you", "how are you doing", "how ya doin'", "how ya doin", "how is everything", "how is everything going", "how's everything going"], #Part of a list found: https://stackoverflow.com/questions/51575924/list-of-greetings-phrases-in-english-for-nlp-task
+    'gen' : ["how are you", "howre you", "how are you doing", "how ya doin", "how ya doin", "how is everything", "how is everything going", "hows everything going"], #Part of a list found: https://stackoverflow.com/questions/51575924/list-of-greetings-phrases-in-english-for-nlp-task
     'capability' : ['what can you do', 'what can you do for me', 'what tasks can you do for me', "what things can you do for me", "what can you help me with", "what can you do to help me", "what can you do to assist me", "what can you do to help me out"],
-    'name': ['what is my name', 'whats my name', 'What is my name', 'Whats my name'],
+    'name': ['what is my name', 'whats my name', 'what is my name', 'whats my name'],
     'quit': ['quit', 'exit', 'bye', 'goodbye', 'thats all', 'see you'],
     'greet': ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening'],
     'weather': ['whats the weather', 'hows the weather', 'what is the weather','what is the weather', 'what is the weather like'],
     'im': ['call me', 'my name is', 'my names', 'change my name to']
+}
+
+playListIntent = {
+    'new': ["id like to add a new playlist", "create a new playlist", "add playlist", "make a new", "create a new", "new playlist", "add a new", "new", "create new", "make new", "add new", "create a new playlist called"],
+    'add': ["id like to add a song to", "add to", "add a song to", "add a song to my playlist", "add to my playlist", "add"],
+    'remove': ["remove from", "id like to remove from", "id like to delete from", "i want to remove from", "delete from"],
+    'delete': ['delete', 'remove', 'delete playlist'],
+    'clear': ['clear', 'wipe', 'delete all from', 'delete all in', 'clear all from', 'wipe all from', 'wipe all in', "clear playlist", "wipe playlist"],
+    'shuffle': ['shuffle','randomise'],
+    'show': ['what songs are in', "what is in", "whats in", "what does contain", "show songs in", "show"]
 }
 
 yesNoIntent ={
@@ -24,6 +35,7 @@ yesNoIntent ={
 class HAIChatBotMC:
     name = ''
     questionsAnswersC = questionsAnswers.QuestionsAnswers()
+    pm = playlistManager.PlaylistManager()
     
     def introSelf(self):
         print("Hello and welcome to Maxim Carr's HAI Chatbot")
@@ -59,10 +71,14 @@ class HAIChatBotMC:
                     print(f"HAIBot: {response[0]}")
                     
             elif processSelect[0] == 1:
-                ret = self.smallTalkIntent([userInput],self.name)
+                ret = self.smallTalkIntent([processSelect[1]],self.name)#Don't need to use the actual user input, just most similar
                 print(f"HAIBot: {ret[0]}")
                 if(ret[1]==-1):
                     break
+            elif processSelect[0] == 2:
+                ret = self.playlistIntent(processSelect[1],userInput,self.name)
+                print(f"HAIBot: {ret[0]}")
+
             else:
                 print(f"HAIBot: {generateOutput.getDefault(self.name)}")
                 
@@ -82,27 +98,55 @@ class HAIChatBotMC:
         datasetST = []
         datasetTA = []
         highQA = 0
-        highQ = []
+        highQLemmatized = []
         highST = 0
+        highTA = 0
+        highTAQ = ""
+        highSTQuery = ""
         a = 0
-        uIC = util.queryLemmatize(userInput)
+        userInputLemmatized = util.queryLemmatize(userInput)
         for item in intentST:
             for string in intentST[item]:
                 datasetST.append(string)
+        for item in playListIntent:
+            for string in playListIntent[item]:
+                datasetTA.append(string)
         for curQuestion in datasetQA:
-            a = util.getCosForPair(uIC,curQuestion)
+            a = util.getCosForPair(userInputLemmatized,curQuestion)
             if a>highQA:
                 highQA = a
-                highQ = curQuestion
+                highQLemmatized = curQuestion
         for curSmallTalk in datasetST:
             cSTL = util.queryLemmatize(curSmallTalk)
-            a = util.getCosForPair(uIC,cSTL)
+            a = util.getCosForPair(userInputLemmatized,cSTL)
             if a>highST:
                 highST = a
-        if max(highQA,highST) == highQA and highQA>0.7:
-            return [0,highQ]
-        elif max(highQA,highST) == highST and highST>0.6:
-            return [1,None]
+                highSTQuery = curSmallTalk
+        resultRound1 = max(highQA,highST)
+        if(resultRound1 == highQA):
+            for curPlaylistOp in datasetTA:
+                currentOpLemmatized = util.queryLemmatize(curPlaylistOp)
+                a = util.getCosForPair(currentOpLemmatized,userInputLemmatized)
+                if a>highQA and a>highTA:
+                    highTA = a
+                    highTAQ = curPlaylistOp
+        else:
+            for curPlaylistOp in datasetTA:
+                currentOpLemmatized = util.queryLemmatize(curPlaylistOp)
+                a = util.getCosForPair(currentOpLemmatized,userInputLemmatized)
+                if a>highST and a>highTA:
+                    highTA = a
+                    highTAQ = curPlaylistOp
+        print(highTA,highST,highQA)
+        if highTA == 0:#Transaction less similar
+            if max(highQA,highST) == highQA and highQA>0.7:
+                return [0,highQLemmatized]
+            elif max(highQA,highST) == highST and highST>0.6:
+                return [1,highSTQuery]
+            else:
+                return [-1,None]
+        elif highTA>0/6:#Transaction more similar
+            return[2,highTAQ]
         else:
             return [-1,None]
     
@@ -120,7 +164,7 @@ class HAIChatBotMC:
         nd = question
         pnd = countVect.transform(nd)
         
-        predictedV = classifier.predict(pnd)#Replace below with working to generate output
+        predictedV = classifier.predict(pnd)
         predictedV = predictedV[0]
         if predictedV == 'gen':
             return [generateOutput.generateGeneral(addIn),0]
@@ -158,6 +202,86 @@ class HAIChatBotMC:
             
         else:
             return ['failed',0]
+        
+    def playlistIntent(self, predictedQ, userInput , addInfo):
+        predictedAsList = predictedQ.split(" ")
+        inputAsList = userInput.split(" ")
+
+        listUnique = list(set(predictedAsList).symmetric_difference(set(inputAsList)))
+        for label in playListIntent:
+            for prompt in playListIntent[label]:
+                for string in listUnique:
+                    if string in prompt:
+                        listUnique.remove(string)
+
+        #regain user intended order
+        final = []
+        final2 = []
+        for part in inputAsList:
+            for part2 in listUnique:
+                if(part2 == part):
+                    final.append(part2)
+
+        data = []
+        labels =[]
+        for item in playListIntent:
+            for string in playListIntent[item]:
+                quest = string
+                data.append(quest)
+                labels.append(item)
+                
+        classifier, countVect = util.trainClassify(data,labels)
+
+        nd = [userInput]
+        pnd = countVect.transform(nd)
+        
+        predictedV = classifier.predict(pnd)
+        predictedV = predictedV[0]
+
+        if(len(final)>0):
+            final2 = ' '.join(final)
+        else:
+            return ["Names for playlists/songs with first strings < 2 aren't allowed",0]
+        
+        listPlaylists = playlistManager.listOfPlayLists.keys()
+
+        existPlaylistCount = 0
+        
+        print(predictedV)
+        if predictedV == "new":
+            return [self.pm.createPlaylist(final2),0]
+        elif predictedV == "delete":
+            return [self.pm.deletePlaylist(final2),0]
+        elif predictedV == "clear":
+            return [self.pm.clearPlaylist(final2),0]
+        elif predictedV == "show":
+            return [self.pm.showPlaylist(final2),0]
+        elif predictedV == "add":
+            firstFound = ""
+            for v in final:
+                if v in listPlaylists:
+                    final.remove(v)
+                    existPlaylistCount += 1
+                    firstFound = v
+            if(existPlaylistCount == 0):
+                return ["This playlist doesn't exist! Maybe you'd want to create it?",0]
+            else:
+                return [self.pm.addToPlaylist(firstFound,final),0]
+        elif predictedV == "remove":
+            firstFound = ""
+            for v in final:
+                if v in listPlaylists:
+                    final.remove(v)
+                    existPlaylistCount += 1
+                    firstFound = v
+            if(existPlaylistCount == 0):
+                return ["This playlist doesn't exist! Maybe you'd want to create it?",0]
+            else:
+                return [self.pm.removeFromPlaylist(firstFound,final),0]
+        else:
+            return generateOutput.getDefault(self.nameMa)
+            
+            
         
     def getAnotherAnswer(self, leftover, userResponse, question):
         data = []
