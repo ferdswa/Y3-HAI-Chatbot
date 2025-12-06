@@ -133,7 +133,6 @@ def generateWeather():
     current_weather_code = current.Variables(1).Value()
 
     weather = ""
-    current_weather_code = 91
     #Weather code information: www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM
     if current_weather_code<49:
         weather = "currently dry"

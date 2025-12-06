@@ -4,3 +4,5 @@ __pycache__/
 Lab1.py
 Lab2.py
 Lab3.py
+playlists/*
+playlists/
