@@ -19,7 +19,8 @@ class QuestionsAnswers:
     answers = []
     documents = []
     corpusDict = {}
-    qaLocation = os.path.join(os.path.dirname(os.path.abspath(__file__)),filename)
+    qaLocation = os.path.join(os.path.dirname(os.path.abspath(__file__)),"datasets")
+    qaLocation = os.path.join(qaLocation,filename)
     df = pd.DataFrame({'documents':documents, 'questions': questions, 'answers': answers})
     questionVs = []
 

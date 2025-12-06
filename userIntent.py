@@ -13,7 +13,7 @@ intentST = intentLists.intentST
 yesNoIntent = intentLists.yesNoIntent
 playListIntent = intentLists.playListIntent
 #https://huggingface.co/datasets/OpenVoiceOS/yes_no_answers
-yesNoDir = os.path.dirname(os.path.abspath(__file__))+os.sep+"yesno.csv"
+yesNoDir = os.path.dirname(os.path.abspath(__file__))+os.sep+"datasets"+os.sep+"yesno.csv"
 
 class HAIChatBotMC:
     name = ''
