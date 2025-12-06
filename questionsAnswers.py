@@ -24,6 +24,7 @@ class QuestionsAnswers:
     df = pd.DataFrame({'documents':documents, 'questions': questions, 'answers': answers})
     questionVs = []
 
+    #Setup QA by loading in the CW1 dataset and lemmatizing
     def __init__(self):
         with open(self.qaLocation, encoding="utf8", errors='ignore', mode='r') as questionsAnswers:
             next(questionsAnswers)
@@ -40,7 +41,6 @@ class QuestionsAnswers:
 
         allQs = dfQ['questions'].values
         allDs = dfQ['documents'].values
-        #allAs = self.df['answers'].values
 
         for i in range(len(allQs)):
             dWord = allDs[i]
@@ -53,6 +53,7 @@ class QuestionsAnswers:
         for y in self.corpusDict.values():
             self.questionVs.append(Counter(y))
 
+    #Answer the question by searching the dataframe as vectors
     def answerQuestion(self,highestQuestionVector):
         df = self.df
         ldocs = list(self.corpusDict.keys())

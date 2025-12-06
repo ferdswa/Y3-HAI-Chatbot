@@ -9,6 +9,7 @@ from nltk.stem import WordNetLemmatizer
 
 lemmatize = WordNetLemmatizer()
 
+#Classify into yes and no
 def trainClassify(data,labels):
     XTrain, XTest, yTrain,yTest = train_test_split(data,labels,stratify=labels, test_size=0.25, random_state=42)
 
@@ -22,6 +23,7 @@ def trainClassify(data,labels):
     classifier = LogisticRegression(random_state=0).fit(XTrainTF,yTrain)
     return classifier, countVect
 
+#Calculate the cosine similarity of 2 vectors
 def getCosForPair( queryVect, currentVectFrQuestions):
     #Formula: https://en.wikipedia.org/wiki/Cosine_similarity#Definition
     intersection = set(queryVect.keys()) & set(currentVectFrQuestions.keys())
@@ -36,6 +38,7 @@ def getCosForPair( queryVect, currentVectFrQuestions):
     else:
         return float(numerator) / denominator
     
+#Lemmatize a string, outputting a Counter
 def queryLemmatize(userInput):
     tokenQ = word_tokenize(userInput)
     taggedQ = pos_tag(tokenQ)

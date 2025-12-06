@@ -2,6 +2,8 @@ import csv
 import datetime
 import os
 import re
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_extraction.text import CountVectorizer
 import questionsAnswers
 import generateOutput
 import playlistManager
@@ -19,7 +21,10 @@ class HAIChatBotMC:
     name = ''
     questionsAnswersC = questionsAnswers.QuestionsAnswers()
     pm = playlistManager.PlaylistManager()
+    classifier = LogisticRegression()
+    countVect = CountVectorizer()
 
+    #Setup by getting yes/no dataset
     def __init__(self):
         try:
             with open(yesNoDir, 'r') as yesnoCSV:
@@ -35,7 +40,7 @@ class HAIChatBotMC:
         except FileNotFoundError:
             print("HAIBot: I'm missing the yes/no dataset csv file. Falling back to default yes no classification, accuraccy may be reduced.")
             
-
+    #Main bot loop method
     def introSelf(self):
         print("Hello and welcome to Maxim Carr's HAI Chatbot")
         print("Please enter a prompt below")
@@ -44,12 +49,12 @@ class HAIChatBotMC:
         self.__init__()#Reinitialise to grab name
         response = self.smallTalkIntent(["hi"],self.name,"")
         print(f"HAIBot: {response[0]}")
-        while True:
+        while True:#Main loop
             userInput = input(f"{self.name}: ").lower()
             userInput = re.sub(r'[^\w\s]','',userInput)#remove punctuation as all the datasets ignore it
             processSelect = self.findMostSimilarProc(userInput)
 
-            if processSelect[0] == 0:
+            if processSelect[0] == 0:#Question Answering
                 dfAnswers = self.questionsAnswersC.answerQuestion(processSelect[1])
                 if 'none' in dfAnswers['documents'].values:#Question wasn't able to be answered
                     print(f"HAIBot: {generateOutput.generateQuestionUnAnswerable([userInput,self.name])}")
@@ -69,33 +74,24 @@ class HAIChatBotMC:
                     response = self.smallTalkIntent(["hi"],self.name,"")
                     print(f"HAIBot: {response[0]}")
                     
-            elif processSelect[0] == 1:
+            elif processSelect[0] == 1:#Small Talk
                 getPtNewName = userInput.split(" ")
                 ret = self.smallTalkIntent([processSelect[1]],self.name, getPtNewName[len(getPtNewName)-1])
                 print(f"HAIBot: {ret[0]}")
-                if(ret[1]==-1):
+                if(ret[1]==-1):#Quit is a subset of small talk
                     break
-            elif processSelect[0] == 2:
-                ret = self.playlistIntent(processSelect[1],userInput,self.name)
+
+            elif processSelect[0] == 2:#Playlist Management
+                ret = self.playlistIntent(processSelect[1],userInput)
                 print(f"HAIBot: {ret[0]}")
                 
                 if "do you want me to make it" in ret[0] or "Maybe you'd want to create it" in ret[0]:
                     createNEPlaylist = input(f"HAIBot: Should I do that for you?\n{self.name}: ").lower()
                     createNEPlaylist = re.sub(r'[^\w\s]','',createNEPlaylist)
 
-                    data = []
-                    labels = []
-                    for item in yesNoIntent:
-                        for string in yesNoIntent[item]:
-                            resp = string
-                            data.append(resp)
-                            labels.append(item)
-
-                    classifier, countVect = util.trainClassify(data,labels)
-
                     nd = [createNEPlaylist]
-                    pnd = countVect.transform(nd)
-                    predictedV = classifier.predict(pnd)
+                    pnd = self.countVect.transform(nd)
+                    predictedV = self.classifier.predict(pnd)
                     predictedV = predictedV[0]#Determined if user has entered a yes or no
                     if predictedV == 'yes':
                         pName = ret[1][len(ret[1])-1]
@@ -113,7 +109,7 @@ class HAIChatBotMC:
             else:
                 print(f"HAIBot: {generateOutput.getDefault(self.name)}")
                 
-
+    #Get the user's name
     def getUserName(self):
         print("HAIBot: Hello!\nWhat is your name?")
         n = input("You: ")
@@ -154,6 +150,7 @@ class HAIChatBotMC:
                 highST = a
                 highSmallTalkQ = curSmallTalk
         resultRound1 = max(highQA,highST)
+        #Run against the winner of the previous round of Cos Similarity
         if(resultRound1 == highQA):
             for curPlaylistOp in datasetTA:
                 currentOpLemmatized = util.queryLemmatize(curPlaylistOp)
@@ -179,7 +176,8 @@ class HAIChatBotMC:
             return[2,highTAQ]
         else:
             return [-1,None]
-    
+        
+    #See what type of small talk the user wants and perform that task
     def smallTalkIntent(self,question:str, addIn, newName):
         predictedV = ""
         for userIntent in intentST:
@@ -196,32 +194,16 @@ class HAIChatBotMC:
             return [generateOutput.generateGreeting([addIn,dayPd]),0]
         elif predictedV == 'weather':
             return [generateOutput.generateWeather(),0]
-        elif predictedV == 'im' or predictedV == 'name':
-            #cosine similarity
-            datasetIM = intentST['im']
-            datasetNM = intentST['name']
-            highName = 0
-            highIdent = 0
-            lemmatizeQ = util.queryLemmatize(question[0])
-            for currentString in datasetIM:
-                currentStringLemmatized = util.queryLemmatize(currentString)
-                a = util.getCosForPair(lemmatizeQ,currentStringLemmatized)
-                if a>highIdent:
-                    highIdent = a
-            for currentString in datasetNM:
-                currentStringLemmatized = util.queryLemmatize(currentString)
-                a = util.getCosForPair(lemmatizeQ,currentStringLemmatized)
-                if a>highName:
-                    highName = a
-            if(highIdent>highName):
-                self.name = newName
-                return self.smallTalkIntent(["hi"],self.name,"")
-            else:
-                return [generateOutput.generateName(addIn),0]
+        elif predictedV == 'im':
+            self.name = newName
+            return self.smallTalkIntent(["hi"],self.name,"")
+        elif predictedV == 'name':
+            return [generateOutput.generateName(addIn),0]
         else:
             return ['failed',0]
         
-    def playlistIntent(self, predictedQ, userInput , addInfo):
+    #See what type of operation the user wants to do on the playlist and perform it    
+    def playlistIntent(self, predictedQ, userInput):
         predictedAsList = predictedQ.split(" ")
         inputAsList = userInput.split(" ")
 
@@ -240,7 +222,7 @@ class HAIChatBotMC:
                 if(part2 == part):
                     final.append(part2)
 
-
+        #Get op type
         predictedV = ""
         for k in playListIntent:
             for v in playListIntent[k]:
@@ -264,9 +246,27 @@ class HAIChatBotMC:
             except FileNotFoundError:
                 return ["This playlist doesn't exist, so there is nothing for me to delete"]
         elif predictedV == "clear":
-            return [self.pm.clearPlaylist(final2)]
+            firstFound = ""
+            for v in final:
+                if v in listPlaylists:
+                    final.remove(v)
+                    existPlaylistCount += 1
+                    firstFound = v
+            if(existPlaylistCount == 0):
+                return ["This playlist doesn't exist! Maybe you'd want to create it?",final]#Set prompt for asking if user wants to create 
+            else:
+                return [self.pm.showPlaylist(firstFound),firstFound]
         elif predictedV == "show":
-            return [self.pm.showPlaylist(final2)]
+            firstFound = ""
+            for v in final:
+                if v in listPlaylists:
+                    final.remove(v)
+                    existPlaylistCount += 1
+                    firstFound = v
+            if(existPlaylistCount == 0):
+                return ["This playlist doesn't exist! Maybe you'd want to create it?",final]#Set prompt for asking if user wants to create 
+            else:
+                return [self.pm.showPlaylist(firstFound),firstFound]
         elif predictedV == "add":
             firstFound = ""
             for v in final:
@@ -275,7 +275,7 @@ class HAIChatBotMC:
                     existPlaylistCount += 1
                     firstFound = v
             if(existPlaylistCount == 0):
-                return ["This playlist doesn't exist! Maybe you'd want to create it?",final]
+                return ["This playlist doesn't exist! Maybe you'd want to create it?",final]#Set prompt for asking if user wants to create 
             else:
                 return [self.pm.addToPlaylist(firstFound,final),firstFound]
         elif predictedV == "remove":
@@ -286,26 +286,17 @@ class HAIChatBotMC:
                     existPlaylistCount += 1
                     firstFound = v
             if(existPlaylistCount == 0):
-                return ["This playlist doesn't exist! Maybe you'd want to create it?",final]
+                return ["This playlist doesn't exist! Maybe you'd want to create it?",final]#Set prompt for asking if user wants to create 
             else:
                 return [self.pm.removeFromPlaylist(firstFound,final),firstFound]
         else:
             return generateOutput.getDefault(self.name)
         
+    #See if the user wants another answer for docs with >1 answer in dataset
     def getAnotherAnswer(self, leftover, userResponse, question):
-        data = []
-        labels = []
-        for item in yesNoIntent:
-            for string in yesNoIntent[item]:
-                resp = string
-                data.append(resp)
-                labels.append(item)
-
-        classifier, countVect = util.trainClassify(data,labels)
-
         nd = userResponse
-        pnd = countVect.transform(nd)
-        predictedV = classifier.predict(pnd)
+        pnd = self.countVect.transform(nd)
+        predictedV = self.classifier.predict(pnd)
         predictedV = predictedV[0]#Determined if user has entered a yes or no
         if predictedV == 'yes':
             resp, leftOver = generateOutput.generateQAOutput(leftover,question)
@@ -323,4 +314,13 @@ if(__name__ == '__main__'):
         dayPd = 'morning'
     if(__name__=='__main__'):
         cb = HAIChatBotMC()
+        data = []
+        labels = []
+        for item in yesNoIntent:
+            for string in yesNoIntent[item]:
+                resp = string
+                data.append(resp)
+                labels.append(item)
+
+        cb.classifier, cb.countVect = util.trainClassify(data,labels)
         cb.introSelf()

@@ -1,6 +1,5 @@
 import random
 import openmeteo_requests
-import pandas as pd
 import requests_cache
 from retry_requests import retry
 
@@ -30,8 +29,8 @@ capabilityResponse = [
     "I'm still in development, but I can help with: "
 ]
 qANoAdditionalInfo = [
-    "OK, no worries",
-    "No problem, what else would you like to talk about",
+    "OK, no worries $",
+    "No problem $, what else would you like to talk about",
     "Sure, anything else you'd like to talk about $?"
 ]
 goodbyeMsgs = ["Thanks for chatting $!",
@@ -54,8 +53,8 @@ noQuestionsFoundResponses = [
     "I couldn't find anything about $, can I help you with anything else £?"
 ]
 
-
-def generateQAOutput(answer:list,question:str):#Upgrade this. Currently outputs random choice if >1 answer. TODO: Make it add only new information. See todo in questionsAnswers
+#generate a response containing an answer and return a list of answers excluding those already printed
+def generateQAOutput(answer:list,question:str):
     outputStr = random.choice(qAGreetingsR1)
     select = random.choice(answer)
     outputStr += select
@@ -63,16 +62,19 @@ def generateQAOutput(answer:list,question:str):#Upgrade this. Currently outputs 
     outputStr = (outputStr, outputStr.replace('$',question))['$' in outputStr]
     return outputStr,answer
 
+#generate a response for when the answers run out
 def generateNoMoreAnswers(addIn):
     outputStr = random.choice(qANoAdditionalInfo)
     outputStr = (outputStr, outputStr.replace('$',addIn))['$' in outputStr]
     return outputStr
     
+#how the bot is feeling
 def generateGeneral(addIn):
     outputStr = random.choice(botFeelings)
     outputStr = (outputStr, outputStr.replace('$',addIn))['$' in outputStr]
     return outputStr
 
+#get what the bot can do
 def generateCapability(addIn):
     outputStr = random.choice(capabilityResponse)
     outputStr += addIn[0]
@@ -81,34 +83,40 @@ def generateCapability(addIn):
         outputStr += addIn[x]
     return outputStr
 
+#generate a name statement
 def generateName(addIn):
     a = random.choice(basicResponse)
     a = (a, a.replace('$',addIn))['$' in a]
     return a
 
+#say goodbye to user 
 def generateGoodbye(addIn):
     a = random.choice(goodbyeMsgs)
     a = (a,a.replace('$', addIn[0]))['$' in a]
     a = (a,a.replace('£', addIn[1]))['£' in a]
     return a
 
+#greet user
 def generateGreeting(addIn):
     a = random.choice(greetings)
     a = (a,a.replace('$', addIn[0]))['$' in a]
     a = (a,a.replace('£', addIn[1]))['£' in a]
     return a
 
+#Fallback if none of the others match
 def getDefault(addIn):
     ret = random.choice(defaultResponses)
     ret = (ret, ret.replace('$',addIn))['$' in ret]
     return ret
 
+#Response for no questions found
 def generateQuestionUnAnswerable(addIn):
     a = random.choice(noQuestionsFoundResponses)
     a = (a,a.replace('$', addIn[0]))['$' in a]
     a = (a,a.replace('£', addIn[1]))['£' in a]
     return a
 
+#Call an open source weather api
 def generateWeather():
     #Below code can be found at https://open-meteo.com/en/docs?latitude=52.9536&longitude=-1.1505&forecast_days=1&timezone=GMT&hourly=&current=temperature_2m,weather_code&wind_speed_unit=mph, date last accessed: 5/12/2025
     cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)

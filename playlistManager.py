@@ -21,6 +21,7 @@ class PlaylistManager:
         except FileNotFoundError:#No file playlist -> no playlists
             os.mkdir(self.playlistDir)
 
+    #create a playlist
     def createPlaylist(self,playlistName):
         if playlistName not in listOfPlayLists.keys():
             playlistPath = self.playlistDir+playlistName
@@ -30,8 +31,8 @@ class PlaylistManager:
         else:
             return f"{playlistName} already exists"
     
+    #add a song to the playlist
     def addToPlaylist(self, playlistName, songs:list[str]):
-        delSongs = []
         alrExistSongs =[]
         if len(songs)>0:
             addedSongs = []
@@ -60,6 +61,7 @@ class PlaylistManager:
         else:
             return "Please tell me which songs you'd like to add"
     
+    #delete a song from the playlist
     def removeFromPlaylist(self, playlistName, songs:list[str]):
         delSongs = []
         neSongs = []
@@ -89,6 +91,7 @@ class PlaylistManager:
         else:
             return "Please tell me which songs you'd like to delete"
 
+    #shuffle playlist
     def shuffle(self, playlistName):
         if playlistName in listOfPlayLists.keys():
             random.shuffle(listOfPlayLists[playlistName])
@@ -96,12 +99,14 @@ class PlaylistManager:
         else:
             return f"There's no playlist called {playlistName}, do you want me to make it?"
     
+    #delete playlist entirely
     def deletePlaylist(self, playlistName):
         playlistPath = self.playlistDir+playlistName+".csv"
         os.remove(playlistPath)
         listOfPlayLists.pop(playlistName)
         return f"{playlistName} has been deleted"
     
+    #remove all songs from playlist
     def clearPlaylist(self, playlistName):
         if playlistName in listOfPlayLists.keys():
             listOfPlayLists[playlistName] = []
@@ -109,6 +114,7 @@ class PlaylistManager:
         else:
             return f"There's no playlist called {playlistName}, do you want me to make it?"
 
+    #return the songs in the playlist
     def showPlaylist(self, playlistName):
         if playlistName in listOfPlayLists.keys():
             songs = []
